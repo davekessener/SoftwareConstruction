@@ -84,7 +84,8 @@ class Main
 			all << node.ID.to_s if node.is_main
 		end
 
-		result += "all: #{all.join(' ')}\n\n#{body}\nclean:\n\trm *.o\n"
+		result += "all: #{all.join(' ')}\n\n#{body}\nclean:\n\trm *.o\n\nremove: clean\n\t"
+		result += 'find -executable | sed -n -e \'/\.\// s/^\.\///\' -e \'/^lab/ p\' | xargs rm' + "\n"
 
 		puts result
 	end

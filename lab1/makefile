@@ -1,7 +1,7 @@
 CC=cc
 CFLAGS=-Wall -g -O0 -Wno-psabi
 
-all: lab1_1a lab1_1c test lab1_3 lab1_1b
+all: lab1_1a lab1_1c lab1_3 lab1_1b
 
 lab1_1a.o: lab1_1a.c include.h 
 	$(CC) $(CFLAGS) -c lab1_1a.c -o lab1_1a.o
@@ -18,14 +18,11 @@ lab1_1c: lab1_1c.o
 logger.o: logger.c include.h 
 	$(CC) $(CFLAGS) -c logger.c -o logger.o
 
+parameter.o: parameter.c 
+	$(CC) $(CFLAGS) -c parameter.c -o parameter.o
+
 dstack.o: dstack.c 
 	$(CC) $(CFLAGS) -c dstack.c -o dstack.o
-
-test.o: test.c 
-	$(CC) $(CFLAGS) -c test.c -o test.o
-
-test: test.o logger.o
-	$(CC) $(CFLAGS) test.o logger.o -o test 
 
 tokenizer.o: tokenizer.c 
 	$(CC) $(CFLAGS) -c tokenizer.c -o tokenizer.o
@@ -48,3 +45,6 @@ lab1_1b: lab1_1b.o
 
 clean:
 	rm *.o
+
+remove: clean
+	find -executable | sed -n -e '/\.\// s/^\.\///' -e '/^lab/ p' | xargs rm
