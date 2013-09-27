@@ -1,0 +1,35 @@
+CF=-Wall -g -Wno-psabi
+CO=-c
+CL=-lm
+INC=include.o
+INCH=include.h logger.h dstack.h evaluate.h tokenizer.h
+
+%.o: %.c $(INCH) 
+	cc $(CO) $(CF) $< -o $@
+
+all: lab1_1a lab1_1b lab1_1c lab1_2 lab1_3 lab1_4 
+
+test:
+	cc $(CF) -O0 test.c -o test $(CL)
+
+lab1_1a: lab1_1a.o $(INC)
+	cc $(CF) $^ -o lab1_1a $(CL)
+
+lab1_1b: lab1_1b.o $(INC)
+	cc $(CF) $^ -o lab1_1b $(CL)
+
+lab1_1c: lab1_1c.o $(INC)
+	cc $(CF) $^ -o lab1_1c $(CL)
+
+lab1_2: lab1_2.o $(INC)
+	cc $(CF) $^ -o lab1_2 $(CL)
+
+lab1_3: lab1_3.o logger.o dstack.o evaluate.o tokenizer.o $(INC)
+	cc $(CF) $^ -o lab1_3 $(CL)
+
+lab1_4: lab1_4.o $(INC)
+	cc $(CF) $^ -o lab1_4 $(CL)
+
+clean:
+	rm *.o
+
