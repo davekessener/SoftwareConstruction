@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
 {
 	char buf[2048];
 	long double r;
-	int force = 0;
+	int force = 0, user = 0;
 	FILE *l = NULL;
 
 	buf[0] = '\0';
@@ -15,9 +15,10 @@ int main(int argc, char *argv[])
 	{
 		if(strcmp(argv[1], "-h") == 0)
 		{
-			printf("Usage: %s [-h] [-v] [-f] [-l logfile] [-c command]\n", argv[0]);
+			printf("Usage: %s [-h] [-v] [-u] [-f] [-l logfile] [-c command]\n", argv[0]);
 			printf("\t'-h' prints help.\n");
 			printf("\t'-v' enters verbose mode.\n");
+			printf("\t'-u' enters user-mode.\n");
 			printf("\t'-f' forces continuation after an error.\n");
 			printf("\t'-l' specifies logfile for verbose mode.\n");
 			printf("\t'-c' allows passing of an expression as argument.\n");
@@ -30,6 +31,11 @@ int main(int argc, char *argv[])
 			if(strcmp(argv[i], "-v") == 0)
 			{
 				l = stdout;
+				i++;
+			}
+			if(argc > i && strcmp(argv[i], "-u") == 0)
+			{
+				user = 1;
 				i++;
 			}
 			if(argc > i && strcmp(argv[i], "-f") == 0)
@@ -63,9 +69,9 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		while(1)
+		do
 		{
-			printf("Enter an expression: ");
+			if(user) { printf("Enter an expression: "); }
 			gets(buf);
 		
 			if(strcmp(buf, "q") == 0) break;
@@ -82,8 +88,15 @@ int main(int argc, char *argv[])
 				}
 			}
 		
-			printf("%s == %Lg\n", buf, r);
-		}
+			if(user)
+			{
+				printf("%s == %Lg\n", buf, r);
+			}
+			else
+			{
+				printf("%Lg\n", r);
+			}
+		} while(user);
 	}
 
 	if(l != NULL) fclose(l);

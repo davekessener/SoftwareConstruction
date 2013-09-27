@@ -27,7 +27,7 @@ int evaluate(const char *src, long double *r)
 
 	if(*parser.tokenizer.cp)
 	{
-		fprintf(stderr, "ERR: Expected EOS, but found '%16s' ...\nAbort.\n", parser.tokenizer.cp);
+		fprintf(stderr, "ERR: Expected EOS, but found '%.16s' ...\nAbort.\n", parser.tokenizer.cp);
 		return 1;
 	}
 

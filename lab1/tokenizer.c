@@ -58,9 +58,10 @@ T	 TKN_get(TKN *this, TABLE *table)
 
 			if(r == 0)
 			{
-				assert(t.type==TAG_TAG);
-				
-				this->cp = tmp;
+				if(t.type == TAG_TAG)
+				{
+					this->cp = tmp;
+				}
 	
 				break;
 			}
