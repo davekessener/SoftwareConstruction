@@ -1,6 +1,6 @@
 #!/bin/bash
 cd lab1
-./makemake.rb > makefile
+./mmf.rb > makefile
 make remove
 rm makefile
 cd ..
