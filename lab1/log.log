@@ -1,0 +1,7 @@
+push 6
+push 9
+push 7
+sub
+mul
+push 5
+sub
