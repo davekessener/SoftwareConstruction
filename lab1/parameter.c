@@ -1,109 +1,268 @@
+#define PARAMETER_C
 #include "parameter.h"
+#undef PARAMETER_C
 
-void PT_init(PT *this)
+void   PTABLE_init(PTABLE *this)
 {
-	this->args = NULL;
-	this->vals = NULL;
-	this->name = this->fullName = NULL;
-	this->argc = 0;
+	this->types    = NULL;
+	this->params   = NULL;
+	this->tc       = 0;
+	this->pc       = 0;
+	this->status   = STATUS_OK;
+	this->name     = NULL;
+	this->fullName = NULL;
 }
 
-void PT_read(PT *this, int c, char **v)
+void   PTABLE_addParameter(PTABLE *this, const char *id, const char *fid, int t)
 {
-	this->name = this->fullName = strdup(v[0]);
-	PT_resize(this, 0);
-	
-	char *p = name;
-	while(*name) { if(*name == '/') p = name + 1; name++; }
-	name = p;
+	this->types = realloc(this->types, ++this->tc * sizeof(PTYPE));
+	PTYPE_init(this->types + this->tc - 1, id, fid, t);
+}
 
-	int i, j = 0;
-	for(i = 0 ; i < c ; i++)
+void   PTABLE_read(PTABLE *this, int c, char **v)
+{
+	int resetFlag = 0, curP = 0;
+	this->fullName = this->name = strdup(v[0]);
+
+	char *tmp = this->name;
+	while(*tmp) { if(*tmp == '/') this->name = tmp + 1; tmp++; }
+
+	this->params = malloc(++this->pc * sizeof(PARA));
+	PARA_init(this->params, NULL);
+
+	int i, j, p;
+	for(i = 1 ; i < c ; i++)
 	{
 		if(v[i][0] == '-')
 		{
-			PT_resize(this, j = this->argc);
-			
 			if(v[i][1] == '-')
 			{
-				int p = 2;
-				while(v[i][p])
-				{
-					if(v[i][p] == '=')
-					{
-						this->args[j] = malloc(p - 1);
-						memcpy(this->args[j], v[i] + 2, p - 2);
-						this->args[j][p - 2] = '\0';
-						free(this->vals[j])
-						this->vals[j] = strdup(v[i] + p + 1);
-						j = 0;
+				this->status |= STATUS_UNKNOWN;
+				char *name = strdup(v[i] + 2), *body = NULL;
+				for(p = 0 ; name[p] ; p++) { if(name[p] == '=') { name[p] = '\0'; body = name + p + 1; } }
 
-						break;
+				for(j = 0 ; j < this->tc ; j++)
+				{
+					if(this->types[j].fullName == NULL)
+					{
+						continue;
 					}
 
-					p++;
+					if(strcmp(this->types[j].fullName, name) == 0)
+					{
+						p = PTABLE_getIndex(this, this->types[j].fullName);
+						if(p > 0)
+						{
+							this->params[p].status |= STATUS_DUPLICATE;
+						}
+						else
+						{
+							p = this->pc++;
+							this->params = realloc(this->params, this->pc * sizeof(PARA));
+							PARA_init(this->params + p, this->types[j].fullName);
+						}
+
+						if(body) PARA_addValue(this->params + p, body);
+
+						curP = 0;
+						this->status &= ~STATUS_UNKNOWN;
+						break;
+					}
 				}
 
-				if(!v[i][p])
-				{
-					this->args[j] = strdup(v[i] + 2);
-				}
+				free(name);
 			}
 			else
 			{
-				this->args[j] = strdup(v[i] + 1);
-			{
+				this->status |= STATUS_UNKNOWN;
+
+				for(j = 0 ; j < this->tc ; j++)
+				{
+					if(this->types[j].shortName != NULL && strcmp(this->types[j].shortName, v[i] + 1) == 0)
+					{
+						p = PTABLE_getIndex(this, this->types[j].shortName);
+
+						if(p > 0)
+						{
+							this->params[p].status |= STATUS_DUPLICATE;
+						}
+						else
+						{
+							p = this->pc++;
+							this->params = realloc(this->params, this->pc * sizeof(PARA));
+							PARA_init(this->params + p, this->types[j].shortName);
+						}
+
+						switch(this->types[j].argType)
+						{
+							case PARAM_NONE:
+								curP = 0;
+								resetFlag = 0;
+								break;
+							case PARAM_ONE:
+								curP = p;
+								resetFlag = 1;
+								break;
+							case PARAM_MANY:
+								curP = p;
+								resetFlag = 0;
+								break;
+						}
+
+						this->status &= ~STATUS_UNKNOWN;
+
+						break;
+					}
+				}
+			}
 		}
 		else
 		{
-			PT_resize(this, j);
-			this->vals[j] = realloc(this->vals[j], strlen(this->vals[j]) + strlen(v[i]) + 2);
-			strcat(this->vals[j], " ");
-			strcat(this->vals[j], v[i]);
-			j = 0;
+			PARA_addValue(this->params + curP, v[i]);
+			if(resetFlag) { resetFlag = 0; curP = 0; }
 		}
 	}
 }
 
-void PT_resize(PT *this, int s)
+int    PTABLE_hasArgument(PTABLE *this, const char *id)
 {
-	if(this->argc > s) return;
-	int o = this->argc;
-	this->argc = s + 1;
-
-	this->args = realloc(this->args, this->argc * sizeof(char *));
-	this->vals = realloc(this->vals, this->argc * sizeof(char *));
-
-	for(; o < this->argc ; o++)
-	{
-		this->args[o] = NULL;
-		this->vals[o] = malloc(1);
-		this->vals[o][0] = '\0';
-	}
+	return PTABLE_getIndex(this, id) >= 0;
 }
 
-int  PT_hasKey(PT *this, const char *id)
+char  *PTABLE_getValue(PTABLE *this, const char *id)
 {
+	int i = PTABLE_getIndex(this, id);
+
+	if(i < 0) return NULL;
+
+	return this->params[i].vals[0];
 }
 
-const char *PT_getValue(PT *this, const char *id)
+char **PTABLE_getValues(PTABLE *this, const char *id)
 {
+	int i = PTABLE_getIndex(this, id);
+
+	if(i < 0) return NULL;
+
+	return this->params[i].vals;
 }
 
-void PT_dispose(PT *this)
+void   PTABLE_dispose(PTABLE *this)
 {
 	int i;
-	for(i = 0 ; i < this->argc, i++)
+	for(i = 0 ; i < this->tc ; i++)
 	{
-		free(args[i + 1]);
-		free(vals[i + 1]);
+		PTYPE_dispose(&this->types[i]);
 	}
 
-	free(args);
-	free(vals);
+	for(i = 0 ; i < this->pc ; i++)
+	{
+		PARA_dispose(&this->params[i]);
+	}
 
+	free(this->types);
+	free(this->params);
+
+	PTABLE_init(this);
+}
+
+// # ---------------------------------------------------------------------------
+
+int    PTABLE_getIndex(PTABLE *this, const char *id)
+{
+	const char *sn = NULL, *fn = NULL;
+
+	if(id == NULL) return 0;
+
+	int i;
+	for(i = 0 ; i < this->tc ; i++)
+	{
+		if(this->types[i].shortName != NULL && strcmp(this->types[i].shortName, id) == 0)
+		{
+			sn = id;
+			fn = this->types[i].fullName;
+			break;
+		}
+		else if(this->types[i].fullName != NULL && strcmp(this->types[i].fullName, id) == 0)
+		{
+			sn = this->types[i].shortName;
+			fn = id;
+			break;
+		}
+	}
+
+	if(sn == NULL && fn == NULL) return -1;
+
+	for(i = 1 ; i < this->pc ; i++)
+	{
+		if((sn != NULL && strcmp(this->params[i].id, sn) == 0) ||
+			(fn != NULL && strcmp(this->params[i].id, fn) == 0))
+		{
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+// # ===========================================================================
+
+void PTYPE_init(PTYPE *this, const char *id, const char *fid, int t)
+{
+	this->shortName = id == NULL ? NULL : strdup(id);
+	this->fullName = fid == NULL ? NULL : strdup(fid);
+	this->argType = t;
+}
+
+void PTYPE_dispose(PTYPE *this)
+{
+	free(this->shortName);
 	free(this->fullName);
 
-	PT_init(this);
+	this->shortName = this->fullName = NULL;
+	this->argType = PARAM_NONE;
+}
+
+// # ---------------------------------------------------------------------------
+
+void PARA_init(PARA *this, const char *id)
+{
+	this->id      = id == NULL ? NULL : strdup(id);
+	this->vals    = malloc(sizeof(char *));
+	this->vals[0] = NULL;
+	this->status  = STATUS_OK;
+}
+
+int  PARA_getSize(PARA *this)
+{
+	if(this->vals == NULL) return 0;
+	
+	int i = 0;
+	while(this->vals[i] != NULL) i++;
+
+	return i;
+}
+
+void PARA_addValue(PARA *this, const char *value)
+{
+	int l = PARA_getSize(this) + 2;
+	this->vals = realloc(this->vals, l * sizeof(char *));
+	this->vals[l - 2] = strdup(value);
+	this->vals[l - 1] = NULL;
+}
+
+void PARA_dispose(PARA *this)
+{
+	int i, l = PARA_getSize(this);
+	for(i = 0 ; i < l ; i++)
+	{
+		free(this->vals[i]);
+	}
+
+	free(this->id);
+	free(this->vals);
+
+	this->id   = NULL;
+	this->vals = NULL;
 }
 
