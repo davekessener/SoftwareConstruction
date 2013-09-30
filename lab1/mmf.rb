@@ -1,15 +1,53 @@
 #!/usr/bin/ruby
 
 class Node
-	attr_reader :ID, :incs, :libs, :deps, :exec
+	attr_reader :ID, :incs, :libs, :deps, :objs, :exec, :cmds
 	@@libraries = {:math => '-lm'}
-	@@cflags = '-Wall -g -O0 -Wno-psabi'
+	@@cflags = '-Wall -ggdb -O0 -Wno-psabi'
 
 	def initialize(fn)
 		@ID = fn
+		@cmds = []
+		@mins = []
 		@incs, @libs = get_incs(fn)
 		@incs, @deps = make_dependencies(@incs)
+		@objs = @deps.dup
 		@exec = is_executable?(fn)
+
+		resolve_instructions()
+
+		@cmds.reject!(&:nil?)
+		@incs.reject!(&:nil?) 
+		@deps.reject!(&:nil?)
+		@objs.reject!(&:nil?)
+
+		@incs.uniq! 
+		@deps.uniq!
+		@objs.uniq!
+	end
+
+	def resolve_instructions
+		@mins.each do |ins|
+			i = ins[0]
+			ins = ins[1..-1]
+
+			case i
+				when 'i'
+					@cmds << ins
+				when 'e'
+					eval(ins)
+				when 'd'
+					i = ins[0]
+					ins = ins[1..-1].gsub(/[\t\n]+/, '')
+					@deps.reject! { |e| e === ins } if i === '-'
+					@deps << ins if i === '+'
+				when 'D'
+					i = ins[0]
+					ins = ins[1..-1].gsub(/[\t\n]+/, '')
+					@objs.reject! { |e| e === ins } if i === '-'
+					@objs << ins if i === '+'
+			end
+		end
 	end
 
 	def make_dependencies(incs)
@@ -35,6 +73,7 @@ class Node
 			fs << fn
 	
 			File.read(fn).each_line do |line|
+				@mins << line[3..-1] if line.start_with?('//#')
 				next if not line.match(/^[ \t]*#include/)
 				
 				line.gsub!(/^[ \t]*#include[ \t]+([\"<].+\.h[\">])[.\n]*$/, '\1')
@@ -68,7 +107,7 @@ class Node
 	end
 
 	def self.build(flags = @@cflags)
-		head = "CC=cc\nCFLAGS=#{flags}\n\n"
+		head = "CC=cc\nCFLAGS=#{flags}\nMACROS=\n\n"
 		obj = ""
 		exec = ""
 		all = []
@@ -78,11 +117,19 @@ class Node
 
 			node = Node.new(file)
 
-			obj += "#{node.ID}.o: #{node.ID} #{node.incs.join(' ')}\n\t$(CC) $(CFLAGS) -c #{node.ID} -o #{node.ID}.o\n\n".gsub(/ +/, ' ')
+			obj += "#{node.ID}.o: #{node.ID} #{node.incs.join(' ')}\n\t$(CC) $(CFLAGS) $(MACROS) -c #{node.ID} -o $@\n\n".gsub(/ +/, ' ')
 
 			if(node.exec)
-				os = node.deps.join('.o ') + '.o' 
-				exec += "#{node.ID[0..-3]}: #{os}\n\t$(CC) $(CFLAGS) #{os} -o #{node.ID[0..-3]} #{node.libs.join(' ')}\n\n".gsub(/ +/, ' ')
+				ds = node.deps.join('.o ') + '.o' 
+				os = node.objs.join('.o ') + '.o'
+				exec += "#{node.ID[0..-3]}: #{ds}\n"
+				
+				node.cmds.each do |cmd|
+					exec += eval(cmd)
+				end
+
+				exec +="\t$(CC) $(CFLAGS) #{os} -o $@ #{node.libs.join(' ')}\n\n".gsub(/ +/, ' ')
+
 				all << node.ID[0..-3]
 			end
 		end

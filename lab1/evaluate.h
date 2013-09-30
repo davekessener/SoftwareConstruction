@@ -1,25 +1,22 @@
 #ifndef __EVALUATE_H
 #define __EVALUATE_H
 
+//#i"\t$(CC) $(CFLAGS) -DSM_LIB -c stackmachine.c -o stackmachine_lib.o\n"
+//#d-stackmachine.c
+//#D-stackmachine.c
+//#D+stackmachine_lib
+
 #include "include.h"
 #include "tokenizer.h"
 #include "dstack.h"
 #include "logger.h"
 #include <math.h>
 
-#define OP_CONST 0
-#define OP_ADD	 1
-#define OP_SUB	 2
-#define OP_MUL	 3
-#define OP_DIV	 4
-#define OP_EXP	 5
-#define OP_LOG	 6
-#define OP_LN 	 7
-#define OP_SIN	 8
-#define OP_COS	 9
-#define OP_TAN	10
-#define OP_NEG	11
+#define SM_LIB
+#include "stackmachine.h"
+#undef SM_LIB
 
+#ifdef EVAL_C
 #define TOK_NONE	 0
 #define TOK_PLUS	 1
 #define TOK_MINUS	 2
@@ -35,8 +32,11 @@
 #define TOK_CP		12
 #define TOK_PI		13
 #define TOK_E		14
+#define TOK_RUP		15
+#define TOK_RDOWN	16
+#define TOK_ROUND	17
 
-typedef struct
+typedef struct __token
 {
 	int type;
 	long double val;
@@ -46,14 +46,10 @@ typedef struct __parser
 {
 	TKN tokenizer;
 	TABLE symtable;
-	TOK *tkns;
-	int c;
 } P;
 
 void P_init(P*);
-int  P_eval(P*, DS *);
-void P_push(P*, TOK);
-TOK	 P_poll(P*);
+void P_print(P*, TOK);
 void P_dispose(P*);
 
 void evalAS(P *);
@@ -63,7 +59,12 @@ void evalU(P *);
 void evalTL(P *);
 void evalC(P *);
 
-int evaluate(const char *, long double *);
+void stdEvalPrint(const char *);
+void (*pFn)(const char *) = stdEvalPrint;
+#endif
+
+void setEvalOutput(void (*)(const char *));
+int evaluate(const char *);
 
 #endif
 

@@ -17,15 +17,17 @@ void readParameter(PARAMS *this, int argc, char **argv)
 	PTABLE_addParameter(&tbl, paramForce[0],   paramForce[1],   PARAM_NONE);
 	PTABLE_addParameter(&tbl, paramLog[0],     paramLog[1],     PARAM_ONE);
 	PTABLE_addParameter(&tbl, paramCommand[0], paramCommand[1], PARAM_MANY);
+	PTABLE_addParameter(&tbl, paramCrossSum[0], paramCrossSum[1], PARAM_NONE);
 
 	PTABLE_read(&tbl, argc, argv);
 
 	if(PTABLE_hasArgument(&tbl, paramHelp[0])) this->flags |= FLAG_HELP;
 	else
 	{
-		if(PTABLE_hasArgument(&tbl, paramVerbose[0])) this->flags |= FLAG_VERBOSE;
-		if(PTABLE_hasArgument(&tbl, paramUser[0]))    this->flags |= FLAG_USER;
-		if(PTABLE_hasArgument(&tbl, paramForce[0]))   this->flags |= FLAG_FORCE;
+		if(PTABLE_hasArgument(&tbl, paramVerbose[0]))  this->flags |= FLAG_VERBOSE;
+		if(PTABLE_hasArgument(&tbl, paramUser[0]))     this->flags |= FLAG_USER;
+		if(PTABLE_hasArgument(&tbl, paramForce[0]))    this->flags |= FLAG_FORCE;
+		if(PTABLE_hasArgument(&tbl, paramCrossSum[0])) this->flags |= FLAG_CROSSSUM;
 		if(PTABLE_hasArgument(&tbl, paramLog[0]))
 		{
 			this->flags |= FLAG_LOG;

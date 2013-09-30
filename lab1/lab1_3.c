@@ -3,21 +3,34 @@
 #include "logger.h"
 #include "parameter.h"
 #include "params.h"
+#include "dstack.h"
+
+#define SM_LIB
+#include "stackmachine.h"
+#undef SM_LIB
+
+DS stack;
+
+void evalStack(const char *);
 
 int main(int argc, char *argv[])
 {
 	char buf[2048];
-	long double r;
+	long double r = 0.0;
+	int err;
 
 	PARAMS params;
+	DS_init(&stack);
+
 	readParameter(&params, argc, argv);
 	
 	if(params.flags & FLAG_HELP)
 	{
-		printf("Usage: %s [-h] [-v] [-u] [-f] [-l logfile] [-c command]\n", argv[0]);
+		printf("Usage: %s [-h] [-v] [-u] [-x] [-f] [-l logfile] [-c command]\n", argv[0]);
 		printf("\t'-h' prints help.\n");
 		printf("\t'-v' enters verbose mode.\n");
 		printf("\t'-u' enters user-mode.\n");
+		printf("\t'-x' calculates the cross-sum of the result.\n");
 		printf("\t'-f' forces continuation after an error.\n");
 		printf("\t'-l' specifies logfile for verbose mode.\n");
 		printf("\t'-c' allows passing of an expression as argument.\n");
@@ -30,11 +43,18 @@ int main(int argc, char *argv[])
 		setLogger(params.logFile);
 	}
 
+	setEvalOutput(evalStack);
+
 	if(params.command)
 	{
-		if(!evaluate(params.command, &r))
+		if(!evaluate(params.command))
 		{
-			printf("%Lg\n", r);
+			if(params.flags & FLAG_CROSSSUM)
+			{
+				evalStack("xsum");
+			}
+
+			printf("%Lg\n", stack.data[stack.i - 1]);
 		}
 	}
 	else
@@ -46,8 +66,10 @@ int main(int argc, char *argv[])
 		
 			if(strcmp(buf, "q") == 0) break;
 		
-			if(evaluate(buf, &r))
+			if((err = evaluate(buf)))
 			{
+				fprintf(stderr, "ERR(%d): Abort.\n", err);
+
 				if((params.flags & FLAG_FORCE) && (params.flags & FLAG_USER))
 				{
 					continue;
@@ -57,6 +79,13 @@ int main(int argc, char *argv[])
 					break;
 				}
 			}
+
+			if(params.flags & FLAG_CROSSSUM)
+			{
+				evalStack("xsum");
+			}
+
+			r = stack.data[stack.i - 1];
 		
 			if(params.flags & FLAG_USER)
 			{
@@ -70,7 +99,14 @@ int main(int argc, char *argv[])
 	}
 
 	disposeParameter(&params);
+	DS_dispose(&stack);
 	
 	return EXIT_SUCCESS;
+}
+
+void evalStack(const char *line)
+{
+	DLOG("%s\n", line);
+	interpret(&stack, line);	
 }
 

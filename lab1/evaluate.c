@@ -1,6 +1,8 @@
+#define EVAL_C
 #include "evaluate.h"
+#undef EVAL_C
 
-int evaluate(const char *src, long double *r)
+int evaluate(const char *src)
 {
 	P parser;
 	P_init(&parser);
@@ -20,6 +22,10 @@ int evaluate(const char *src, long double *r)
 	TABLE_add(&parser.symtable, ")", TOK_CP);
 	TABLE_add(&parser.symtable, "pi", TOK_PI);
 	TABLE_add(&parser.symtable, "e", TOK_E);
+	TABLE_add(&parser.symtable, "#^", TOK_RUP);
+	TABLE_add(&parser.symtable, "#v", TOK_RDOWN);
+	TABLE_add(&parser.symtable, "#-", TOK_ROUND);
+	TABLE_add(&parser.symtable, "##", TOK_ROUND);
 
 	TKN_load(&parser.tokenizer, src);
 
@@ -28,30 +34,33 @@ int evaluate(const char *src, long double *r)
 	if(*parser.tokenizer.cp)
 	{
 		fprintf(stderr, "ERR: Expected EOS, but found '%.16s' ...\nAbort.\n", parser.tokenizer.cp);
+		P_dispose(&parser);
 		return 1;
 	}
 
-	DS stack;
-	DS_init(&stack);
-
-	if(P_eval(&parser, &stack))
-	{
-		return 2;
-	}
-
-	if(stack.i != 1)
-	{
-		return 3;
-	}
-
-	*r = DS_pop(&stack);
+	P_dispose(&parser);
 
 	return 0;
 }
 
+void setEvalOutput(void (*fn)(const char *))
+{
+	if(fn != NULL)
+	{
+		pFn = fn;
+	}
+}
+
+// # --------------------------------------------------------------------------- 
+
+void stdEvalPrint(const char *out)
+{
+	printf("%s\n", out);
+}
+
 // # =========================================================================== 
 
-void inline pushToken(P *p, int i) { TOK t; t.type = i; t.val = 0.0; P_push(p, t); }
+void inline pushToken(P *p, int i) { TOK t; t.type = i; t.val = 0.0; P_print(p, t); }
 T inline getToken(P *p) { return TKN_get(&p->tokenizer, &p->symtable); }
 
 void evalAS(P *p)
@@ -65,12 +74,12 @@ void evalAS(P *p)
 		if(t.data.tag == TOK_PLUS)
 		{
 			evalMD(p);
-			pushToken(p, OP_ADD);
+			pushToken(p, SM_OP_ADD);
 		}
 		else if(t.data.tag == TOK_MINUS)
 		{
 			evalMD(p);
-			pushToken(p, OP_SUB);
+			pushToken(p, SM_OP_SUB);
 		}
 		else
 		{
@@ -94,12 +103,12 @@ void evalMD(P *p)
 		if(t.data.tag == TOK_AST)
 		{
 			evalE(p);
-			pushToken(p, OP_MUL);
+			pushToken(p, SM_OP_MUL);
 		}
 		else if(t.data.tag == TOK_SLASH)
 		{
 			evalE(p);
-			pushToken(p, OP_DIV);
+			pushToken(p, SM_OP_DIV);
 		}
 		else
 		{
@@ -121,7 +130,7 @@ void evalE(P *p)
 	if(t.type == TAG_TAG && t.data.tag == TOK_EXP)
 	{
 		evalE(p);
-		pushToken(p, OP_EXP);
+		pushToken(p, SM_OP_EXP);
 	}
 	else
 	{
@@ -142,7 +151,7 @@ void evalU(P *p)
 				return;
 			case TOK_MINUS:
 				evalTL(p);
-				pushToken(p, OP_NEG);
+				pushToken(p, SM_OP_NEG);
 				return;
 		}
 	}
@@ -160,25 +169,37 @@ void evalTL(P *p)
 	{
 		switch(t.data.tag)
 		{
+			case TOK_RUP:
+				evalC(p);
+				pushToken(p, SM_OP_RUP);
+				return;
+			case TOK_RDOWN:
+				evalC(p);
+				pushToken(p, SM_OP_RDWN);
+				return;
+			case TOK_ROUND:
+				evalC(p);
+				pushToken(p, SM_OP_RND);
+				return;
 			case TOK_SIN:
 				evalC(p);
-				pushToken(p, OP_SIN);
+				pushToken(p, SM_OP_SIN);
 				return;
 			case TOK_COS:
 				evalC(p);
-				pushToken(p, OP_COS);
+				pushToken(p, SM_OP_COS);
 				return;
 			case TOK_TAN:
 				evalC(p);
-				pushToken(p, OP_TAN);
+				pushToken(p, SM_OP_TAN);
 				return;
 			case TOK_LOG:
 				evalC(p);
-				pushToken(p, OP_LOG);
+				pushToken(p, SM_OP_LOG);
 				return;
 			case TOK_LN:
 				evalC(p);
-				pushToken(p, OP_LN);
+				pushToken(p, SM_OP_LN);
 				return;
 		}
 	}
@@ -191,7 +212,7 @@ void evalTL(P *p)
 void evalC(P *p)
 {
 	TOK tok;
-	tok.type = OP_CONST;
+	tok.type = SM_OP_PUSH;
 
 	T t = getToken(p);
 
@@ -200,19 +221,19 @@ void evalC(P *p)
 	if(t.type == TAG_VALUE)
 	{
 		tok.val = t.data.val;
-		P_push(p, tok);
+		P_print(p, tok);
 	}
 	else
 	{
 		if(t.data.tag == TOK_PI)
 		{
 			tok.val = M_PI;
-			P_push(p, tok);
+			P_print(p, tok);
 		}
 		else if(t.data.tag == TOK_E)
 		{
 			tok.val = M_E;
-			P_push(p, tok);
+			P_print(p, tok);
 		}
 		else if(t.data.tag == TOK_OP)
 		{
@@ -236,108 +257,29 @@ void evalC(P *p)
 
 void P_init(P *this)
 {
-	this->tkns = NULL;
-	this->c    = 0;
-
 	TABLE_init(&this->symtable);
 	TKN_init(&this->tokenizer);
 }
 
-int  P_eval(P *this, DS *stack)
+void P_print(P *this, TOK t)
 {
-	long double v1, v2;
+	char buf[512];
 
-	while(this->c > 0)
+	if(t.type == SM_OP_PUSH)
 	{
-		TOK t = P_poll(this);
-
-		if(t.type == OP_CONST)
-		{
-			DLOG("%s %Lg\n", OP_LOGS[OP_CONST], t.val);
-			DS_push(stack, t.val);
-		}
-		else
-		{
-			DLOG("%s\n", OP_LOGS[t.type]);
-			v1 = DS_pop(stack);
-
-			switch(t.type)
-			{
-				case OP_NEG:
-					DS_push(stack, -v1);
-					break;
-				case OP_LOG:
-					DS_push(stack, (long double) log10((double) v1));
-					break;
-				case OP_LN:
-					DS_push(stack, (long double) log((double) v1));
-					break;
-				case OP_SIN:
-					while(v1 > 2.0 * M_PI) v1 -= 2.0 * M_PI;
-					while(v1 < 0.0) v1 += 2.0 * M_PI;
-					DS_push(stack, (long double) sin((double) v1));
-					break;
-				case OP_COS:
-					while(v1 > 2.0 * M_PI) v1 -= 2.0 * M_PI;
-					while(v1 < 0.0) v1 += 2.0 * M_PI;
-					DS_push(stack, (long double) cos((double) v1));
-					break;
-				case OP_TAN:
-					while(v1 > 2.0 * M_PI) v1 -= 2.0 * M_PI;
-					while(v1 < 0.0) v1 += 2.0 * M_PI;
-					DS_push(stack, (long double) tan((double) v1));
-					break;
-				default:
-					v2 = DS_pop(stack);
-					
-					switch(t.type)
-					{
-						case OP_ADD:
-							DS_push(stack, v2 + v1);
-							break;
-						case OP_SUB:
-							DS_push(stack, v2 - v1);
-							break;
-						case OP_MUL:
-							DS_push(stack, v2 * v1);
-							break;
-						case OP_DIV:
-							DS_push(stack, v2 / v1);
-							break;
-						case OP_EXP:
-							DS_push(stack, (long double) pow((double) v2, (double) v1));
-							break;
-						default:
-							return 1;
-					}
-			}
-		}
+		sprintf(buf, "%s %Lg", SM_OP_INS[SM_OP_PUSH], t.val);
+	}
+	else
+	{
+		sprintf(buf, "%s", SM_OP_INS[t.type]);
 	}
 
-	return 0;
-}
-
-void P_push(P *this, TOK t)
-{
-	this->tkns = realloc(this->tkns, ++this->c * sizeof(T));
-	this->tkns[this->c - 1] = t;
-}
-
-TOK	 P_poll(P *this)
-{
-	assert(this->c>0);
-
-	TOK t = this->tkns[0];
-	memmove(this->tkns, this->tkns + 1, --this->c * sizeof(T));
-	return t;
+	pFn(buf);
 }
 
 void P_dispose(P *this)
 {
-	free(this->tkns);
 	TABLE_dispose(&this->symtable);
 	TKN_dispose(&this->tokenizer);
-
-	P_init(this);
 }
 

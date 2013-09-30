@@ -1,28 +1,8 @@
-#include <math.h>
-#include "include.h"
-#include "parameter.h"
-#include "dstack.h"
+#define STACKMACHINE_C
+#include "stackmachine.h"
+#undef STACKMACHINE_C
 
-#define FLAG_NONE 0
-#define FLAG_VERBOSE 1
-
-#define ERR_NONE 0
-#define ERR_INPUT 1
-#define ERR_EMPTY 2
-#define ERR_UNKNOWN 3
-
-#define STR_EQ(s,v) strcmp(s,v)==0
-
-const char const *flagVerbose[] = {"v", "verbose"};
-
-typedef struct
-{
-	int flags;
-} PARAMS;
-
-void readParameter(PARAMS*, int, char **);
-int  interpret(DS*, char *);
-
+#ifndef SM_LIB
 int main(int argc, char *argv[])
 {
 	char buf[2048];
@@ -43,15 +23,15 @@ int main(int argc, char *argv[])
 
 		switch(interpret(&stack, buf))
 		{
-			case ERR_INPUT:
+			case SM_ERR_INPUT:
 				fprintf(stderr, "ERR: Invalid input '%.16s'\nAbort.\n", buf);
 				DS_dispose(&stack);
 				return EXIT_FAILURE;
-			case ERR_EMPTY:
+			case SM_ERR_EMPTY:
 				fprintf(stderr, "ERR: Empty stack!\nAbort.\n");
 				DS_dispose(&stack);
 				return EXIT_FAILURE;
-			case ERR_UNKNOWN:
+			case SM_ERR_UNKNOWN:
 				fprintf(stderr, "ERR: Unknown command '%.16s'!\nAbort.\n", buf);
 				DS_dispose(&stack);
 				return EXIT_FAILURE;
@@ -82,88 +62,118 @@ void readParameter(PARAMS *p, int argc, char **argv)
 
 	PTABLE_dispose(&t);
 }
+#endif
 
-int  interpret(DS *stack, char *input)
+int  interpret(DS *stack, const char *input)
 {
 	char buf[1024];
 	long double v1, v2;
 
-	if(!*input) return ERR_INPUT;
+	if(!*input) return SM_ERR_INPUT;
 
 	sscanf(input, " %s", buf);
 
-	if(STR_EQ(buf, "push"))
+#define BEQ(i) (strcmp(buf, SM_OP_INS[i])==0)
+
+	if(BEQ(SM_OP_PUSH))
 	{
-		if(!sscanf(input + 4, " %Lf", &v1)) return ERR_INPUT;
+		if(!sscanf(input + 4, " %Lf", &v1)) return SM_ERR_INPUT;
 		DS_push(stack, v1);
 	}
 	else 
 	{
-		if(stack->c < 1) return ERR_EMPTY;
+		if(stack->c < 1) return SM_ERR_EMPTY;
 		v1 = DS_pop(stack);
 
-		if(STR_EQ(buf, "neg"))
+		if(BEQ(SM_OP_NEG))
 		{
 			DS_push(stack, -v1);
 		}
-		else if(STR_EQ(buf, "sin"))
+		else if(BEQ(SM_OP_SIN))
 		{
 			while(v1 > 2.0 * M_PI) v1 -= 2.0 * M_PI;
 			while(v1 < 0.0) v1 += 2.0 * M_PI;
 			DS_push(stack, (long double) sin((double) v1));
 		}
-		else if(STR_EQ(buf, "cos"))
+		else if(BEQ(SM_OP_COS))
 		{
 			while(v1 > 2.0 * M_PI) v1 -= 2.0 * M_PI;
 			while(v1 < 0.0) v1 += 2.0 * M_PI;
 			DS_push(stack, (long double) cos((double) v1));
 		}
-		else if(STR_EQ(buf, "tan"))
+		else if(BEQ(SM_OP_TAN))
 		{
 			while(v1 > 2.0 * M_PI) v1 -= 2.0 * M_PI;
 			while(v1 < 0.0) v1 += 2.0 * M_PI;
 			DS_push(stack, (long double) tan((double) v1));
 		}
-		else if(STR_EQ(buf, "log") || STR_EQ(buf, "lg"))
+		else if(BEQ(SM_OP_LOG) || BEQ(SM_OP_LG))
 		{
 			DS_push(stack, (long double) log10((double) v1));
 		}
-		else if(STR_EQ(buf, "ln"))
+		else if(BEQ(SM_OP_LN))
 		{
 			DS_push(stack, (long double) log((double) v1));
 		}
+		else if(BEQ(SM_OP_RUP))
+		{
+			v2 = v1 < 0.0L ? -1.0L : 1.0L; v1 = v1 < 0.0L ? -v1 : v1;
+			DS_push(stack, v2 * ((long double) ((long long) (v1 + 0.999999L))));
+		}
+		else if(BEQ(SM_OP_RDWN))
+		{
+			v2 = v1 < 0.0L ? -1.0L : 1.0L; v1 = v1 < 0.0L ? -v1 : v1;
+			DS_push(stack, v2 * ((long double) ((long long) v1)));
+		}
+		else if(BEQ(SM_OP_RND))
+		{
+			v2 = v1 < 0.0L ? -1.0L : 1.0L; v1 = v1 < 0.0L ? -v1 : v1;
+			DS_push(stack, v2 * ((long double) ((long long) (v1 + 0.5L))));
+		}
+		else if(BEQ(SM_OP_XSUM))
+		{
+			long long t = (long long) (v1 < 0.0L ? -v1 : v1);
+			v1 = 0.0L;
+			while(t > 0)
+			{
+				v1 += t % 10;
+				t /= 10;
+			}
+			DS_push(stack, v1);
+		}
 		else
 		{
-			if(stack->c < 1) return ERR_EMPTY;
+			if(stack->c < 1) return SM_ERR_EMPTY;
 			v2 = DS_pop(stack);
 
-			if(STR_EQ(buf, "add"))
+			if(BEQ(SM_OP_ADD))
 			{
 				DS_push(stack, v2 + v1);
 			}
-			else if(STR_EQ(buf, "sub"))
+			else if(BEQ(SM_OP_SUB))
 			{
 				DS_push(stack, v2 - v1);
 			}
-			else if(STR_EQ(buf, "mul"))
+			else if(BEQ(SM_OP_MUL))
 			{
 				DS_push(stack, v2 * v1);
 			}
-			else if(STR_EQ(buf, "div"))
+			else if(BEQ(SM_OP_DIV))
 			{
 				DS_push(stack, v2 / v1);
 			}
-			else if(STR_EQ(buf, "exp"))
+			else if(BEQ(SM_OP_EXP))
 			{
 				DS_push(stack, (long double) pow((double) v2, (double) v1));
 			}
 			else
 			{
-				return ERR_UNKNOWN;
+				return SM_ERR_UNKNOWN;
 			}
 		}
 	}
 
-	return ERR_NONE;
+	return SM_ERR_NONE;
+#undef BEQ
 }
 
