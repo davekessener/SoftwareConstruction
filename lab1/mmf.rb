@@ -122,6 +122,7 @@ class Node
 			objs << "#{node.ID}.o"
 
 			if(node.exec)
+				objs += node.objs.map { |e| e + '.o' } unless node.objs.nil?
 				ds = node.deps.join('.o ') + '.o' 
 				os = node.objs.join('.o ') + '.o'
 				exec += "#{node.ID[0..-3]}: #{ds}\n"
@@ -135,6 +136,8 @@ class Node
 				all << node.ID[0..-3]
 			end
 		end
+
+		objs.uniq!
 
 		head += "all: #{all.join(' ')}\n\n#{exec}\n#{obj}\n"
 		head += "clean:\n\trm -f #{objs.join(' ')}\n\n"
