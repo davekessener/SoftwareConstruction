@@ -12,5 +12,11 @@
 #include <string.h>
 #include <assert.h>
 
+#ifndef FQP
+#define FQP long double 
+#endif
+
+FQP evalNumber(const char**);
+
 #endif
 

@@ -22,15 +22,17 @@ void   PTABLE_addParameter(PTABLE *this, const char *id, const char *fid, int t)
 void   PTABLE_read(PTABLE *this, int c, char **v)
 {
 	int resetFlag = 0, curP = 0;
+	int i, j, p;
+	char *tmp, *name, *body;
+
 	this->fullName = this->name = strdup(v[0]);
 
-	char *tmp = this->name;
+	tmp = this->name;
 	while(*tmp) { if(*tmp == '/') this->name = tmp + 1; tmp++; }
 
 	this->params = malloc(++this->pc * sizeof(PARA));
 	PARA_init(this->params, NULL);
 
-	int i, j, p;
 	for(i = 1 ; i < c ; i++)
 	{
 		if(v[i][0] == '-')
@@ -38,7 +40,9 @@ void   PTABLE_read(PTABLE *this, int c, char **v)
 			if(v[i][1] == '-')
 			{
 				this->status |= STATUS_UNKNOWN;
-				char *name = strdup(v[i] + 2), *body = NULL;
+				name = strdup(v[i] + 2);
+				body = NULL;
+
 				for(p = 0 ; name[p] ; p++) { if(name[p] == '=') { name[p] = '\0'; body = name + p + 1; } }
 
 				for(j = 0 ; j < this->tc ; j++)
@@ -171,10 +175,10 @@ void   PTABLE_dispose(PTABLE *this)
 int    PTABLE_getIndex(PTABLE *this, const char *id)
 {
 	const char *sn = NULL, *fn = NULL;
+	int i;
 
 	if(id == NULL) return 0;
 
-	int i;
 	for(i = 0 ; i < this->tc ; i++)
 	{
 		if(this->types[i].shortName != NULL && strcmp(this->types[i].shortName, id) == 0)
@@ -235,9 +239,10 @@ void PARA_init(PARA *this, const char *id)
 
 int  PARA_getSize(PARA *this)
 {
+	int i;
 	if(this->vals == NULL) return 0;
 	
-	int i = 0;
+	i = 0;
 	while(this->vals[i] != NULL) i++;
 
 	return i;

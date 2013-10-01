@@ -49,10 +49,10 @@ int main(int argc, char *argv[])
 
 void readParameter(PARAMS *p, int argc, char **argv)
 {
-	p->flags = FLAG_NONE;
-
 	PTABLE t;
 	PTABLE_init(&t);
+
+	p->flags = FLAG_NONE;
 
 	PTABLE_addParameter(&t, flagVerbose[0], flagVerbose[1], PARAM_NONE);
 
@@ -66,18 +66,22 @@ void readParameter(PARAMS *p, int argc, char **argv)
 
 int  interpret(DS *stack, const char *input)
 {
+	int i;
 	char buf[1024];
-	long double v1, v2;
+	const char *tmp;
+	FQP v1, v2;
+	long long t;
 
 	if(!*input) return SM_ERR_INPUT;
 
 	sscanf(input, " %s", buf);
 
 #define BEQ(i) (strcmp(buf, SM_OP_INS[i])==0)
-
 	if(BEQ(SM_OP_PUSH))
 	{
-		if(!sscanf(input + 4, " %Lf", &v1)) return SM_ERR_INPUT;
+		i = 4; while(input[i] == ' ' || input[i] == '\t') i++;
+		tmp = input + i; v1 = evalNumber(&tmp);
+
 		DS_push(stack, v1);
 	}
 	else 
@@ -93,46 +97,46 @@ int  interpret(DS *stack, const char *input)
 		{
 			while(v1 > 2.0 * M_PI) v1 -= 2.0 * M_PI;
 			while(v1 < 0.0) v1 += 2.0 * M_PI;
-			DS_push(stack, (long double) sin((double) v1));
+			DS_push(stack, (FQP) sin((double) v1));
 		}
 		else if(BEQ(SM_OP_COS))
 		{
 			while(v1 > 2.0 * M_PI) v1 -= 2.0 * M_PI;
 			while(v1 < 0.0) v1 += 2.0 * M_PI;
-			DS_push(stack, (long double) cos((double) v1));
+			DS_push(stack, (FQP) cos((double) v1));
 		}
 		else if(BEQ(SM_OP_TAN))
 		{
 			while(v1 > 2.0 * M_PI) v1 -= 2.0 * M_PI;
 			while(v1 < 0.0) v1 += 2.0 * M_PI;
-			DS_push(stack, (long double) tan((double) v1));
+			DS_push(stack, (FQP) tan((double) v1));
 		}
 		else if(BEQ(SM_OP_LOG) || BEQ(SM_OP_LG))
 		{
-			DS_push(stack, (long double) log10((double) v1));
+			DS_push(stack, (FQP) log10((double) v1));
 		}
 		else if(BEQ(SM_OP_LN))
 		{
-			DS_push(stack, (long double) log((double) v1));
+			DS_push(stack, (FQP) log((double) v1));
 		}
 		else if(BEQ(SM_OP_RUP))
 		{
 			v2 = v1 < 0.0L ? -1.0L : 1.0L; v1 = v1 < 0.0L ? -v1 : v1;
-			DS_push(stack, v2 * ((long double) ((long long) (v1 + 0.999999L))));
+			DS_push(stack, v2 * ((FQP) ((long long) (v1 + 0.999999L))));
 		}
 		else if(BEQ(SM_OP_RDWN))
 		{
 			v2 = v1 < 0.0L ? -1.0L : 1.0L; v1 = v1 < 0.0L ? -v1 : v1;
-			DS_push(stack, v2 * ((long double) ((long long) v1)));
+			DS_push(stack, v2 * ((FQP) ((long long) v1)));
 		}
 		else if(BEQ(SM_OP_RND))
 		{
 			v2 = v1 < 0.0L ? -1.0L : 1.0L; v1 = v1 < 0.0L ? -v1 : v1;
-			DS_push(stack, v2 * ((long double) ((long long) (v1 + 0.5L))));
+			DS_push(stack, v2 * ((FQP) ((long long) (v1 + 0.5L))));
 		}
 		else if(BEQ(SM_OP_XSUM))
 		{
-			long long t = (long long) (v1 < 0.0L ? -v1 : v1);
+			t = (long long) (v1 < 0.0L ? -v1 : v1);
 			v1 = 0.0L;
 			while(t > 0)
 			{
@@ -164,7 +168,7 @@ int  interpret(DS *stack, const char *input)
 			}
 			else if(BEQ(SM_OP_EXP))
 			{
-				DS_push(stack, (long double) pow((double) v2, (double) v1));
+				DS_push(stack, (FQP) pow((double) v2, (double) v1));
 			}
 			else
 			{

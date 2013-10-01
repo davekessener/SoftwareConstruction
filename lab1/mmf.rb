@@ -111,13 +111,15 @@ class Node
 		obj = ""
 		exec = ""
 		all = []
+		objs = []
 
 		Dir.foreach('.') do |file|
 			next if not file.end_with?('.c')
 
 			node = Node.new(file)
 
-			obj += "#{node.ID}.o: #{node.ID} #{node.incs.join(' ')}\n\t$(CC) $(CFLAGS) $(MACROS) -c #{node.ID} -o $@\n\n".gsub(/ +/, ' ')
+			obj += "#{node.ID}.o: #{node.ID} #{node.incs.join(' ')}\n\t$(CC) $(CFLAGS) $(MACROS) -c #{node.ID} -o $@\n\n"
+			objs << "#{node.ID}.o"
 
 			if(node.exec)
 				ds = node.deps.join('.o ') + '.o' 
@@ -128,16 +130,17 @@ class Node
 					exec += eval(cmd)
 				end
 
-				exec +="\t$(CC) $(CFLAGS) #{os} -o $@ #{node.libs.join(' ')}\n\n".gsub(/ +/, ' ')
+				exec +="\t$(CC) $(CFLAGS) #{os} -o $@ #{node.libs.join(' ')}\n\n"
 
 				all << node.ID[0..-3]
 			end
 		end
 
-		head += "all: #{all.join(' ')}\n\n#{exec}\n#{obj}\nclean:\n\trm -f *.o\n\nremove: clean\n\t".gsub(/ +/, ' ')
-		head += 'find -executable | sed -n \'/^\.\/lab[^\.]*$$/ p\' | xargs rm -f' + "\n\n"
+		head += "all: #{all.join(' ')}\n\n#{exec}\n#{obj}\n"
+		head += "clean:\n\trm -f #{objs.join(' ')}\n\n"
+		head += "remove: clean\n\trm -f #{all.join(' ')}\n\n"
 
-		puts head
+		puts head.gsub(/ +/, ' ')
 	end
 end
 

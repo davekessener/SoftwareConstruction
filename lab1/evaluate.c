@@ -7,25 +7,27 @@ int evaluate(const char *src)
 	P parser;
 	P_init(&parser);
 
-	TABLE_add(&parser.symtable, "+", TOK_PLUS);
-	TABLE_add(&parser.symtable, "-", TOK_MINUS);
-	TABLE_add(&parser.symtable, "*", TOK_AST);
-	TABLE_add(&parser.symtable, "/", TOK_SLASH);
-	TABLE_add(&parser.symtable, "**", TOK_EXP);
-	TABLE_add(&parser.symtable, "log", TOK_LOG);
-	TABLE_add(&parser.symtable, "lg", TOK_LOG);
-	TABLE_add(&parser.symtable, "ln", TOK_LN);
-	TABLE_add(&parser.symtable, "sin", TOK_SIN);
-	TABLE_add(&parser.symtable, "cos", TOK_COS);
-	TABLE_add(&parser.symtable, "tan", TOK_TAN);
-	TABLE_add(&parser.symtable, "(", TOK_OP);
-	TABLE_add(&parser.symtable, ")", TOK_CP);
-	TABLE_add(&parser.symtable, "pi", TOK_PI);
-	TABLE_add(&parser.symtable, "e", TOK_E);
-	TABLE_add(&parser.symtable, "#^", TOK_RUP);
-	TABLE_add(&parser.symtable, "#v", TOK_RDOWN);
-	TABLE_add(&parser.symtable, "#-", TOK_ROUND);
-	TABLE_add(&parser.symtable, "##", TOK_ROUND);
+#define TADD(s,i) TABLE_add(&parser.symtable,s,i)
+	TADD("+", TOK_PLUS);
+	TADD("-", TOK_MINUS);
+	TADD("*", TOK_AST);
+	TADD("/", TOK_SLASH);
+	TADD("**", TOK_EXP);
+	TADD("log", TOK_LOG);
+	TADD("lg", TOK_LOG);
+	TADD("ln", TOK_LN);
+	TADD("sin", TOK_SIN);
+	TADD("cos", TOK_COS);
+	TADD("tan", TOK_TAN);
+	TADD("(", TOK_OP);
+	TADD(")", TOK_CP);
+	TADD("pi", TOK_PI);
+	TADD("e", TOK_E);
+	TADD("#^", TOK_RUP);
+	TADD("#v", TOK_RDOWN);
+	TADD("#-", TOK_ROUND);
+	TADD("##", TOK_ROUND);
+#undef TADD
 
 	TKN_load(&parser.tokenizer, src);
 
@@ -65,9 +67,11 @@ T inline getToken(P *p) { return TKN_get(&p->tokenizer, &p->symtable); }
 
 void evalAS(P *p)
 {
+	T t;
+
 	evalMD(p);
 
-	T t = getToken(p);
+	t = getToken(p);
 
 	while(t.type == TAG_TAG)
 	{
@@ -94,9 +98,11 @@ void evalAS(P *p)
 
 void evalMD(P *p)
 {
+	T t;
+
 	evalE(p);
 
-	T t = getToken(p);
+	t = getToken(p);
 
 	while(t.type == TAG_TAG)
 	{
@@ -123,9 +129,11 @@ void evalMD(P *p)
 
 void evalE(P *p)
 {
+	T t;
+
 	evalU(p);
 
-	T t = getToken(p);
+	t = getToken(p);
 
 	if(t.type == TAG_TAG && t.data.tag == TOK_EXP)
 	{
@@ -169,38 +177,32 @@ void evalTL(P *p)
 	{
 		switch(t.data.tag)
 		{
+#define TLP(i) evalC(p);pushToken(p,i)
 			case TOK_RUP:
-				evalC(p);
-				pushToken(p, SM_OP_RUP);
+				TLP(SM_OP_RUP);
 				return;
 			case TOK_RDOWN:
-				evalC(p);
-				pushToken(p, SM_OP_RDWN);
+				TLP(SM_OP_RDWN);
 				return;
 			case TOK_ROUND:
-				evalC(p);
-				pushToken(p, SM_OP_RND);
+				TLP(SM_OP_RND);
 				return;
 			case TOK_SIN:
-				evalC(p);
-				pushToken(p, SM_OP_SIN);
+				TLP(SM_OP_SIN);
 				return;
 			case TOK_COS:
-				evalC(p);
-				pushToken(p, SM_OP_COS);
+				TLP(SM_OP_COS);
 				return;
 			case TOK_TAN:
-				evalC(p);
-				pushToken(p, SM_OP_TAN);
+				TLP(SM_OP_TAN);
 				return;
 			case TOK_LOG:
-				evalC(p);
-				pushToken(p, SM_OP_LOG);
+				TLP(SM_OP_LOG);
 				return;
 			case TOK_LN:
-				evalC(p);
-				pushToken(p, SM_OP_LN);
+				TLP(SM_OP_LN);
 				return;
+#undef TLP
 		}
 	}
 
@@ -211,10 +213,12 @@ void evalTL(P *p)
 
 void evalC(P *p)
 {
+	T t;
 	TOK tok;
+
 	tok.type = SM_OP_PUSH;
 
-	T t = getToken(p);
+	t = getToken(p);
 
 	if(t.type == TAG_NONE) return;
 

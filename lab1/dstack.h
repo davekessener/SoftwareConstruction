@@ -1,12 +1,12 @@
 #ifndef __DSTACK_H
 #define __DSTACK_H
 
+#include "include.h"
+
 #ifdef DSTACK_C
 #include <malloc.h>
 #include <assert.h>
 #endif
-
-typedef long double FQP;
 
 typedef struct __long_double_stack
 {

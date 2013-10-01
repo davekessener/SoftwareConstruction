@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include "include.h"
 
 typedef struct
 {
@@ -21,7 +22,7 @@ typedef struct
 	union
 	{
 		int tag;
-		long double val;
+		FQP val;
 	} data;
 	int type;
 } T;
@@ -44,7 +45,6 @@ void TABLE_add(TABLE*, const char *, int);
 int  TABLE_find(TABLE*, const char *);
 void TABLE_dispose(TABLE*);
 
-long double evalNumber(char **);
 void deleteWhitespace(char *);
 
 #endif

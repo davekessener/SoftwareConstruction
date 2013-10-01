@@ -17,9 +17,12 @@ void DS_push(DS *this, FQP f)
 
 FQP  DS_pop(DS *this)
 {
+	FQP f;
+
 	assert(this->i > 0);
-	FQP f = this->data[--this->i];
+	f = this->data[--this->i];
 	DS_resize(this);
+	
 	return f;
 }
 

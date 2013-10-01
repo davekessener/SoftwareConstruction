@@ -1,7 +1,7 @@
 #ifndef __EVALUATE_H
 #define __EVALUATE_H
 
-//#i"\t$(CC) $(CFLAGS) -DSM_LIB -c stackmachine.c -o stackmachine_lib.o\n"
+//#i"\t$(CC) $(CFLAGS) $(MACROS) -DSM_LIB -c stackmachine.c -o stackmachine_lib.o\n"
 //#d-stackmachine.c
 //#D-stackmachine.c
 //#D+stackmachine_lib
