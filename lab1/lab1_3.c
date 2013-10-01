@@ -9,18 +9,18 @@
 #include "stackmachine.h"
 #undef SM_LIB
 
-DS stack;
-
 void evalStack(const char *);
+DS *getStack();
 
 int main(int argc, char *argv[])
 {
 	char buf[2048];
-	long double r = 0.0;
+	long double r = 0.0L;
 	int err;
+	DS *stack = getStack();
 
 	PARAMS params;
-	DS_init(&stack);
+	DS_init(stack);
 
 	readParameter(&params, argc, argv);
 	
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 				evalStack("xsum");
 			}
 
-			printf("%Lg\n", (long double) stack.data[stack.i - 1]);
+			printf("%Lg\n", (long double) stack->data[stack->i - 1]);
 		}
 	}
 	else
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 				evalStack("xsum");
 			}
 
-			r = stack.data[stack.i - 1];
+			r = (long double) stack->data[stack->i - 1];
 		
 			if(params.flags & FLAG_USER)
 			{
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 	}
 
 	disposeParameter(&params);
-	DS_dispose(&stack);
+	DS_dispose(stack);
 	
 	return EXIT_SUCCESS;
 }
@@ -107,6 +107,13 @@ int main(int argc, char *argv[])
 void evalStack(const char *line)
 {
 	DLOG("%s\n", line);
-	interpret(&stack, line);	
+	interpret(getStack(), line);	
+}
+
+DS *getStack(void)
+{
+	static DS stack;
+
+	return &stack;
 }
 

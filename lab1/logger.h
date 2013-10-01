@@ -5,12 +5,10 @@
 #include "evaluate.h"
 
 void setLogger(FILE *);
+FILE **getLogger();
 
-#ifdef LOGGER_C
-FILE *logger = NULL;
-#else
-#define DLOG(...) if(logger!=NULL){fprintf(logger,__VA_ARGS__);}
-extern FILE *logger;
+#ifndef LOGGER_C
+#define DLOG(...) if(*getLogger()!=NULL){fprintf(*getLogger(),__VA_ARGS__);}
 #endif
 
 #endif

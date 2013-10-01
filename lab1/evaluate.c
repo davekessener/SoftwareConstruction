@@ -49,7 +49,7 @@ void setEvalOutput(void (*fn)(const char *))
 {
 	if(fn != NULL)
 	{
-		pFn = fn;
+		*pFn() = fn;
 	}
 }
 
@@ -271,19 +271,26 @@ void P_print(P *this, TOK t)
 
 	if(t.type == SM_OP_PUSH)
 	{
-		sprintf(buf, "%s %Lg", SM_OP_INS[SM_OP_PUSH], t.val);
+		sprintf(buf, "%s %Lg", SM_OP_Instructions(SM_OP_PUSH), t.val);
 	}
 	else
 	{
-		sprintf(buf, "%s", SM_OP_INS[t.type]);
+		sprintf(buf, "%s", SM_OP_Instructions(t.type));
 	}
 
-	pFn(buf);
+	(*pFn())(buf);
 }
 
 void P_dispose(P *this)
 {
 	TABLE_dispose(&this->symtable);
 	TKN_dispose(&this->tokenizer);
+}
+
+logfPtr *pFn(void)
+{
+	static logfPtr ptr = stdEvalPrint;
+
+	return &ptr;
 }
 

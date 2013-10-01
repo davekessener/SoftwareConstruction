@@ -76,7 +76,7 @@ int  interpret(DS *stack, const char *input)
 
 	sscanf(input, " %s", buf);
 
-#define BEQ(i) (strcmp(buf, SM_OP_INS[i])==0)
+#define BEQ(i) (strcmp(buf, SM_OP_Instructions(i))==0)
 	if(BEQ(SM_OP_PUSH))
 	{
 		i = 4; while(input[i] == ' ' || input[i] == '\t') i++;

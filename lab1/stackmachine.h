@@ -29,8 +29,9 @@
 #define SM_OP_RND	15
 #define SM_OP_XSUM	16
 
-#ifdef STACKMACHINE_C
-const char *SM_OP_INS[] = {
+inline static const char *SM_OP_Instructions(int i)
+{
+	static const char *SM_OP_INS[] = {
 		"push", 
 		"add", 
 		"sub", 
@@ -48,9 +49,9 @@ const char *SM_OP_INS[] = {
 		"rdown", 
 		"round",
 		"xsum"};
-#else
-extern const char *SM_OP_INS[];
-#endif
+	
+	return SM_OP_INS[i];
+}
 
 #define STR_EQ(s,v) strcmp(s,v)==0
 

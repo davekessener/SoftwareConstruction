@@ -4,6 +4,12 @@
 
 void setLogger(FILE *f)
 {
-	logger = f;
+	*getLogger() = f;
+}
+
+FILE **getLogger(void)
+{
+	static FILE *f = NULL;
+	return &f;
 }
 

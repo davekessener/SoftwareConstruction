@@ -60,7 +60,9 @@ void evalTL(P *);
 void evalC(P *);
 
 void stdEvalPrint(const char *);
-void (*pFn)(const char *) = stdEvalPrint;
+
+typedef void (*logfPtr)(const char *);
+logfPtr *pFn();
 #endif
 
 void setEvalOutput(void (*)(const char *));

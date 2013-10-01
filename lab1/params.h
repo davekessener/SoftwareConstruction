@@ -15,13 +15,13 @@
 
 #ifdef PARAMS_C
 typedef const char const * CSTR;
-CSTR paramHelp[]     = {"h", "help"};
-CSTR paramVerbose[]  = {"v", "verbose"};
-CSTR paramUser[]     = {"u", "user"};
-CSTR paramForce[]    = {"f", "force"};
-CSTR paramLog[]      = {"l", "log-file"};
-CSTR paramCommand[]  = {"c", "command"};
-CSTR paramCrossSum[] = {"x", "cross-sum"};
+inline static CSTR paramHelp(int i)     { static CSTR v[] = {"h", "help"};      return v[i]; }
+inline static CSTR paramVerbose(int i)  { static CSTR v[] = {"v", "verbose"};   return v[i]; }
+inline static CSTR paramUser(int i)     { static CSTR v[] = {"u", "user"};      return v[i]; }
+inline static CSTR paramForce(int i)    { static CSTR v[] = {"f", "force"};     return v[i]; }
+inline static CSTR paramLog(int i)      { static CSTR v[] = {"l", "log-file"};  return v[i]; }
+inline static CSTR paramCommand(int i)  { static CSTR v[] = {"c", "command"};   return v[i]; }
+inline static CSTR paramCrossSum(int i) { static CSTR v[] = {"x", "cross-sum"}; return v[i]; }
 #endif
 
 typedef struct
