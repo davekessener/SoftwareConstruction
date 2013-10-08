@@ -1,121 +1,27 @@
-#include "include.h"
-#include "evaluate.h"
-#include "logger.h"
-#include "parameter.h"
-#include "params.h"
-#include "dstack.h"
-
-#define SM_LIB
-#include "stackmachine.h"
-#undef SM_LIB
-
-void evalStack(const char *);
-DS *getStack();
+#include "main.h"
 
 int main(int argc, char *argv[])
 {
-	char buf[2048];
-	long double r = 0.0L;
-	int err;
-	DS *stack = getStack();
+	int i, r;
+	char **tmp;
 
-	PARAMS params;
-	DS_init(stack);
+	tmp = malloc((argc + 1) * sizeof(char *));
+	tmp[0] = strdup(argv[0]);
+	tmp[1] = strdup("-c");
 
-	readParameter(&params, argc, argv);
-	
-	if(params.flags & FLAG_HELP)
+	for(i = 2 ; i < argc + 1 ; i++)
 	{
-		printf("Usage: %s [-h] [-v] [-u] [-x] [-f] [-l logfile] [-c command]\n", argv[0]);
-		printf("\t'-h' prints help.\n");
-		printf("\t'-v' enters verbose mode.\n");
-		printf("\t'-u' enters user-mode.\n");
-		printf("\t'-x' calculates the cross-sum of the result.\n");
-		printf("\t'-f' forces continuation after an error.\n");
-		printf("\t'-l' specifies logfile for verbose mode.\n");
-		printf("\t'-c' allows passing of an expression as argument.\n");
-
-		return EXIT_SUCCESS;
+		tmp[i] = strdup(argv[i - 1]);
 	}
 
-	if(params.flags & FLAG_VERBOSE)
+	r = executeNumberEvaluator(argc + 1, tmp);
+
+	for(i = 0 ; i < argc + 1 ; i++)
 	{
-		setLogger(params.logFile);
+		free(tmp[i]);
 	}
+	free(tmp);
 
-	setEvalOutput(evalStack);
-
-	if(params.command)
-	{
-		if(!evaluate(params.command))
-		{
-			if(params.flags & FLAG_CROSSSUM)
-			{
-				evalStack("xsum");
-			}
-
-			assert(stack!=NULL&&stack->data!=NULL&&stack->i>0);
-
-			printf("%Lg\n", (long double) stack->data[stack->i - 1]);
-		}
-	}
-	else
-	{
-		do
-		{
-			if(params.flags & FLAG_USER) { printf("Enter an expression: "); }
-			gets(buf);
-		
-			if(strcmp(buf, "q") == 0) break;
-		
-			if((err = evaluate(buf)))
-			{
-				fprintf(stderr, "ERR(%d): Abort.\n", err);
-
-				if((params.flags & FLAG_FORCE) && (params.flags & FLAG_USER))
-				{
-					continue;
-				}
-				else
-				{
-					break;
-				}
-			}
-
-			if(params.flags & FLAG_CROSSSUM)
-			{
-				evalStack("xsum");
-			}
-
-			r = (long double) stack->data[stack->i - 1];
-		
-			if(params.flags & FLAG_USER)
-			{
-				printf("%s == %Lg\n", buf, r);
-			}
-			else
-			{
-				printf("%Lg\n", r);
-			}
-		} while(params.flags & FLAG_USER);
-	}
-
-	disposeParameter(&params);
-	DS_dispose(stack);
-	
-	return EXIT_SUCCESS;
-}
-
-void evalStack(const char *line)
-{
-	DLOG("%s\n", line);
-	interpret(getStack(), line);	
-}
-
-DS *getStack(void)
-{
-	static DS stack;
-
-	return &stack;
+	return r;
 }
 

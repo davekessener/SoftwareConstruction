@@ -1,12 +1,6 @@
 #ifndef __EVALUATE_H
 #define __EVALUATE_H
 
-// Instructions for the makefile-generator
-//#i"\t$(CC) $(CFLAGS) $(MACROS) -DSM_LIB -c stackmachine.c -o stackmachine_lib.o\n"
-//#d-stackmachine.c
-//#D-stackmachine.c
-//#D+stackmachine_lib
-
 #include "include.h"
 #include "tokenizer.h"
 #include "dstack.h"

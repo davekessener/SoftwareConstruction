@@ -251,12 +251,12 @@ void evalC(P *p)
 	{
 		if(t.data.tag == TOK_PI)
 		{
-			tok.val = PI();
+			tok.val = PI;
 			P_print(p, tok);
 		}
 		else if(t.data.tag == TOK_E)
 		{
-			tok.val = E();
+			tok.val = E;
 			P_print(p, tok);
 		}
 		else if(t.data.tag == TOK_OP)

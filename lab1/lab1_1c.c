@@ -25,8 +25,8 @@ void skipWhitespace()
 	ungetc(c, stdin);
 }
 
-int inline contained(int c, const char *p) { while(*p) { if(*p++ == c) return 1; } return 0; }
-void inline toLower(int *c) { if(*c >= 'A' && *c <= 'Z') { *c -= 'A' - 'a'; } }
+int contained(int c, const char *p) { while(*p) { if(*p++ == c) return 1; } return 0; }
+void toLower(int *c) { if(*c >= 'A' && *c <= 'Z') { *c -= 'A' - 'a'; } }
 
 int readInt(int w, long long *r)
 {

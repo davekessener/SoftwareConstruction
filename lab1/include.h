@@ -22,17 +22,8 @@
 #endif
 
 // Defines PI and E globally
-inline static double PI(void)
-{
-	static double pi = 4.0 * atan(1.0);
-	return pi;
-}
-
-inline static double E(void)
-{
-	static double e = exp(1.0);
-	return e;
-}
+#define PI 3.14159265359
+#define E  2.71828182846
 
 // Reads a number from a string, updates pointer
 // position.

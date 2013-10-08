@@ -36,7 +36,7 @@ enum SM_OP
 	SM_OP_XSUM
 };
 
-inline static const char *SM_OP_Instructions(int i)
+static const char *SM_OP_Instructions(int i)
 {
 	static const char *SM_OP_INS[] = {
 		"push", 
@@ -69,7 +69,14 @@ inline static const char *SM_OP_Instructions(int i)
 #define FLAG_NONE 0
 #define FLAG_VERBOSE 1
 
-const char const *flagVerbose[] = {"v", "verbose"};
+static const char **flagVerbose(void)
+{
+	static const char *fV[] = {
+		"v",
+		"verbose"};
+	
+	return fV;
+}
 
 typedef struct
 {
