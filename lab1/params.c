@@ -43,7 +43,7 @@ void readParameter(PARAMS *this, int argc, char **argv)
 
 			if(cmds == NULL || cmds[0] == NULL)
 			{
-				fprintf(stderr, "ERR: No command supplies with command flag '-c'.\nAbort.\n");
+				fprintf(stderr, "ERR: No command supplied with command flag '-c'.\nAbort.\n");
 				exit(1);
 			}
 

@@ -3,6 +3,8 @@
 
 #define BUF_SIZE 1024
 
+// Macro for string insertion.
+// Currently unused.
 #define STR(x) # x
 #define STRX(x) STR(x)
 
@@ -12,10 +14,15 @@
 #include <string.h>
 #include <assert.h>
 
+// Default to using long doubles if there
+// was no number-type predefined with the
+// compiler-call
 #ifndef FQP
 #define FQP long double 
 #endif
 
+// Reads a number from a string, updates pointer
+// position.
 FQP evalNumber(const char**);
 
 #endif

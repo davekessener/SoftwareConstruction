@@ -54,6 +54,8 @@ int main(int argc, char *argv[])
 				evalStack("xsum");
 			}
 
+			assert(stack!=NULL&&stack->data!=NULL&&stack->i>0);
+
 			printf("%Lg\n", (long double) stack->data[stack->i - 1]);
 		}
 	}

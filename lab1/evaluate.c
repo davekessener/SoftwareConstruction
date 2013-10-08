@@ -7,6 +7,8 @@ int evaluate(const char *src)
 	P parser;
 	P_init(&parser);
 
+// Add all viable tokens with their string-based
+// identified to the symboltable
 #define TADD(s,i) TABLE_add(&parser.symtable,s,i)
 	TADD("+", TOK_PLUS);
 	TADD("-", TOK_MINUS);
@@ -29,10 +31,14 @@ int evaluate(const char *src)
 	TADD("##", TOK_ROUND);
 #undef TADD
 
+	// Load the input string into the tokenizer
 	TKN_load(&parser.tokenizer, src);
 
+	// Evaluate the expression
 	evalAS(&parser);
 
+	// If the read buffer isn't empty
+	// (The tokenizer couldn't read the entire input string)
 	if(*parser.tokenizer.cp)
 	{
 		fprintf(stderr, "ERR: Expected EOS, but found '%.16s' ...\nAbort.\n", parser.tokenizer.cp);
@@ -42,11 +48,14 @@ int evaluate(const char *src)
 
 	P_dispose(&parser);
 
+	// Return status == OK
 	return 0;
 }
 
-void setEvalOutput(void (*fn)(const char *))
+void setEvalOutput(logfPtr fn)
 {
+	// Assign the static function pointer from
+	// 'pFn' the new output function (if it isn't a NULL pointer)
 	if(fn != NULL)
 	{
 		*pFn() = fn;
@@ -62,9 +71,20 @@ void stdEvalPrint(const char *out)
 
 // # =========================================================================== 
 
-void inline pushToken(P *p, int i) { TOK t; t.type = i; t.val = 0.0; P_print(p, t); }
+// Print a token with id 'i' via parser 'p'
+void inline printToken(P *p, int i) { TOK t; t.type = i; t.val = 0.0; P_print(p, t); }
+// Read next token from the tokenizer of parser 'p'
 T inline getToken(P *p) { return TKN_get(&p->tokenizer, &p->symtable); }
 
+// Grammar for math-expressions:
+// MATH-EXPR = AS-EXPR
+//   AS-EXPR = MD-EXPR ([+-] MD-EXPR)*
+//   MD-EXPR =  E-EXPR ([*/] E-EXPR)*
+//    E-EXPR =  U-EXPR ('**'  E-EXPR)?
+//    U-EXPR = [+-]? TL-EXPR
+//   TL-EXPR = (sin|cos|tan|log|lg|ln|...)? C-EXPR
+//    C-EXPR =   number-constant  // ((0[xb]?)?[0-9a-fA-F]*\.?[0-9a-fA-F]+)
+//             | '(' AS-EXPR ')'
 void evalAS(P *p)
 {
 	T t;
@@ -78,12 +98,12 @@ void evalAS(P *p)
 		if(t.data.tag == TOK_PLUS)
 		{
 			evalMD(p);
-			pushToken(p, SM_OP_ADD);
+			printToken(p, SM_OP_ADD);
 		}
 		else if(t.data.tag == TOK_MINUS)
 		{
 			evalMD(p);
-			pushToken(p, SM_OP_SUB);
+			printToken(p, SM_OP_SUB);
 		}
 		else
 		{
@@ -109,12 +129,12 @@ void evalMD(P *p)
 		if(t.data.tag == TOK_AST)
 		{
 			evalE(p);
-			pushToken(p, SM_OP_MUL);
+			printToken(p, SM_OP_MUL);
 		}
 		else if(t.data.tag == TOK_SLASH)
 		{
 			evalE(p);
-			pushToken(p, SM_OP_DIV);
+			printToken(p, SM_OP_DIV);
 		}
 		else
 		{
@@ -138,7 +158,7 @@ void evalE(P *p)
 	if(t.type == TAG_TAG && t.data.tag == TOK_EXP)
 	{
 		evalE(p);
-		pushToken(p, SM_OP_EXP);
+		printToken(p, SM_OP_EXP);
 	}
 	else
 	{
@@ -159,7 +179,7 @@ void evalU(P *p)
 				return;
 			case TOK_MINUS:
 				evalTL(p);
-				pushToken(p, SM_OP_NEG);
+				printToken(p, SM_OP_NEG);
 				return;
 		}
 	}
@@ -177,7 +197,7 @@ void evalTL(P *p)
 	{
 		switch(t.data.tag)
 		{
-#define TLP(i) evalC(p);pushToken(p,i)
+#define TLP(i) evalC(p);printToken(p,i)
 			case TOK_RUP:
 				TLP(SM_OP_RUP);
 				return;

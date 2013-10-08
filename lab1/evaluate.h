@@ -1,6 +1,7 @@
 #ifndef __EVALUATE_H
 #define __EVALUATE_H
 
+// Instructions for the makefile-generator
 //#i"\t$(CC) $(CFLAGS) $(MACROS) -DSM_LIB -c stackmachine.c -o stackmachine_lib.o\n"
 //#d-stackmachine.c
 //#D-stackmachine.c
@@ -16,32 +17,61 @@
 #include "stackmachine.h"
 #undef SM_LIB
 
+// If this is included by 'evaluate.c'
 #ifdef EVAL_C
-#define TOK_NONE	 0
-#define TOK_PLUS	 1
-#define TOK_MINUS	 2
-#define TOK_AST		 3
-#define TOK_SLASH	 4
-#define TOK_EXP		 5
-#define TOK_LOG		 6
-#define TOK_LN		 7
-#define TOK_SIN		 8
-#define TOK_COS		 9
-#define TOK_TAN		10
-#define TOK_OP		11
-#define TOK_CP		12
-#define TOK_PI		13
-#define TOK_E		14
-#define TOK_RUP		15
-#define TOK_RDOWN	16
-#define TOK_ROUND	17
 
+// Possible token-ids
+enum
+{
+	TOK_NONE, 
+	TOK_PLUS,
+	TOK_MINUS,
+	TOK_AST,
+	TOK_SLASH,
+	TOK_EXP,
+	TOK_LOG,
+	TOK_LN,
+	TOK_SIN,
+	TOK_COS,
+	TOK_TAN,
+	TOK_OP,
+	TOK_CP,
+	TOK_PI,
+	TOK_E,
+	TOK_RUP,
+	TOK_RDOWN,
+	TOK_ROUND
+};
+
+//#define TOK_NONE	 0
+//#define TOK_PLUS	 1
+//#define TOK_MINUS	 2
+//#define TOK_AST		 3
+//#define TOK_SLASH	 4
+//#define TOK_EXP		 5
+//#define TOK_LOG		 6
+//#define TOK_LN		 7
+//#define TOK_SIN		 8
+//#define TOK_COS		 9
+//#define TOK_TAN		10
+//#define TOK_OP		11
+//#define TOK_CP		12
+//#define TOK_PI		13
+//#define TOK_E		14
+//#define TOK_RUP		15
+//#define TOK_RDOWN	16
+//#define TOK_ROUND	17
+
+// Token structure - holds token-id
+// and a number (if applicable)
 typedef struct __token
 {
 	int type;
-	long double val;
+	FQP val;
 } TOK;
 
+// Parser structure - holds a tokenizer
+// and a symbol table
 typedef struct __parser
 {
 	TKN tokenizer;
@@ -49,23 +79,42 @@ typedef struct __parser
 } P;
 
 void P_init(P*);
+// Print a token to the output file
+// via the specified output function
 void P_print(P*, TOK);
 void P_dispose(P*);
 
+// Evaluate addition/subtraction
 void evalAS(P *);
+// Evaluate multiplication/division
 void evalMD(P *);
+// Evaluate exponentiation
 void evalE(P *);
+// Evaluate unary operations (negation)
 void evalU(P *);
+// Evaluate trig-fuctions, logarithm, etc.
 void evalTL(P *);
+// Evaluate a constant
 void evalC(P *);
 
+// Standard output function
+// Just print to stdout
 void stdEvalPrint(const char *);
 
+// Function that returns a pointer to a
+// static pointer to a fuction that returns
+// void and takes a string as an argument.
+// Dereferenced it functions as the
+// output function used to print tokens.
 typedef void (*logfPtr)(const char *);
 logfPtr *pFn();
 #endif
 
+// Public function to set the output function
 void setEvalOutput(void (*)(const char *));
+// Read and tokenize a string, then print the
+// intermediate representation of the
+// infix mathematical expression in postfix notation.
 int evaluate(const char *);
 
 #endif

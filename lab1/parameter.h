@@ -4,20 +4,39 @@
 #include <string.h>
 #include <malloc.h>
 
-#define PARAM_NONE	0
-#define PARAM_ONE	1
-#define PARAM_MANY	2
+// Parameter argument count
+enum
+{
+	PARAM_NONE,
+	PARAM_ONE,
+	PARAM_MANY
+};
 
-#define STATUS_OK 0
-#define STATUS_DUPLICATE 1
-#define STATUS_UNKNOWN 2
+// Status of read arguments
+enum
+{
+	STATUS_OK,
+	STATUS_DUPLICATE,
+	STATUS_UNKOWN
+};
 
+// Argument prototype, eg
+// For the 'verbose-flag':
+// shortName == "v"
+// fullName ==  "verbose"
+// This would read from the programs
+// command line arguments
+// '-v' and '--verbose'
+// Arguments for the arguments are read as follows:
+// -v arg1 arg2 ... argn
+// --verbose="arg"
 struct __parameter_type
 {
 	char *shortName, *fullName;
 	int argType;
 };
 
+// If this is included from 'parameter.c'
 #ifdef PARAMETER_C
 typedef struct __parameter_type PTYPE;
 
@@ -25,6 +44,7 @@ void PTYPE_init(PTYPE*, const char *, const char *, int);
 void PTYPE_dispose(PTYPE*);
 #endif
 
+// Struct for a read argument
 struct __parameter
 {
 	char *id;
@@ -41,6 +61,7 @@ void PARA_addValue(PARA*, const char *);
 void PARA_dispose(PARA*);
 #endif
 
+// 
 typedef struct
 {
 	struct __parameter_type *types;
