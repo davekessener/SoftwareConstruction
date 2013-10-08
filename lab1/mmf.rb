@@ -3,7 +3,7 @@
 class Node
 	attr_reader :ID, :incs, :libs, :deps, :objs, :exec, :cmds
 	@@libraries = {:math => '-lm'}
-	@@cflags = '-Wall -ggdb -O0 -Wno-psabi'
+	@@cflags = '-Wall -pedantic -std=c99 -ggdb -O0 -Wno-psabi'
 
 	def initialize(fn)
 		@ID = fn

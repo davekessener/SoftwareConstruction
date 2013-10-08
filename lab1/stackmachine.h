@@ -4,6 +4,7 @@
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
+#include "include.h"
 #include "dstack.h"
 
 enum SM_ERR
@@ -13,11 +14,6 @@ enum SM_ERR
 	SM_ERR_EMPTY,
 	SM_ERR_UNKNOWN
 };
-
-//#define SM_ERR_NONE 0
-//#define SM_ERR_INPUT 1
-//#define SM_ERR_EMPTY 2
-//#define SM_ERR_UNKNOWN 3
 
 enum SM_OP
 {
@@ -39,24 +35,6 @@ enum SM_OP
 	SM_OP_RND,	
 	SM_OP_XSUM
 };
-
-//#define SM_OP_PUSH	 0
-//#define SM_OP_ADD	 1
-//#define SM_OP_SUB	 2
-//#define SM_OP_MUL	 3
-//#define SM_OP_DIV	 4
-//#define SM_OP_EXP	 5
-//#define SM_OP_LOG	 6
-//#define SM_OP_LG	 7
-//#define SM_OP_LN 	 8
-//#define SM_OP_SIN	 9
-//#define SM_OP_COS	10
-//#define SM_OP_TAN	11
-//#define SM_OP_NEG	12
-//#define SM_OP_RUP	13
-//#define SM_OP_RDWN	14
-//#define SM_OP_RND	15
-//#define SM_OP_XSUM	16
 
 inline static const char *SM_OP_Instructions(int i)
 {

@@ -21,6 +21,19 @@
 #define FQP long double 
 #endif
 
+// Defines PI and E globally
+inline static double PI(void)
+{
+	static double pi = 4.0 * atan(1.0);
+	return pi;
+}
+
+inline static double E(void)
+{
+	static double e = exp(1.0);
+	return e;
+}
+
 // Reads a number from a string, updates pointer
 // position.
 FQP evalNumber(const char**);

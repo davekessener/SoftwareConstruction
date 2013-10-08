@@ -1,7 +1,7 @@
 #include "include.h"
 
 // Is the character c somewhere within the string l?
-int inline isIn(const char *l, char c) { while(*l) { if(*l == c) return 1; l++; } return 0; }
+int isIn(const char *l, char c) { while(*l) { if(*l == c) return 1; l++; } return 0; }
 
 FQP evalNumber(const char **src)
 {
@@ -10,7 +10,7 @@ FQP evalNumber(const char **src)
 
 	long double val = 0.0;
 	int base = 10, off = 1;
-	int dec = 0, f = 0;
+	int dec = 0, f = 0, v;
 
 	// Read next character
 	char c = *line++;
@@ -64,7 +64,7 @@ FQP evalNumber(const char **src)
 		}
 
 		// Number representation -> Number
-		int v = c;
+		v = c;
 		if(c >= '0' && c <= '9') v -= '0';
 		if(c >= 'a' && c <= 'f') v -= 'a' - 10;
 

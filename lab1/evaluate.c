@@ -72,9 +72,9 @@ void stdEvalPrint(const char *out)
 // # =========================================================================== 
 
 // Print a token with id 'i' via parser 'p'
-void inline printToken(P *p, int i) { TOK t; t.type = i; t.val = 0.0; P_print(p, t); }
+void printToken(P *p, int i) { TOK t; t.type = i; t.val = 0.0; P_print(p, t); }
 // Read next token from the tokenizer of parser 'p'
-T inline getToken(P *p) { return TKN_get(&p->tokenizer, &p->symtable); }
+T getToken(P *p) { return TKN_get(&p->tokenizer, &p->symtable); }
 
 // Grammar for math-expressions:
 // MATH-EXPR = AS-EXPR
@@ -251,12 +251,12 @@ void evalC(P *p)
 	{
 		if(t.data.tag == TOK_PI)
 		{
-			tok.val = M_PI;
+			tok.val = PI();
 			P_print(p, tok);
 		}
 		else if(t.data.tag == TOK_E)
 		{
-			tok.val = M_E;
+			tok.val = E();
 			P_print(p, tok);
 		}
 		else if(t.data.tag == TOK_OP)

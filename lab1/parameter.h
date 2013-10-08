@@ -2,7 +2,7 @@
 #define __PARAMETER_H
 
 #include <string.h>
-#include <malloc.h>
+#include <stdio.h>
 
 // Parameter argument count
 enum
@@ -17,7 +17,7 @@ enum
 {
 	STATUS_OK,
 	STATUS_DUPLICATE,
-	STATUS_UNKOWN
+	STATUS_UNKNOWN
 };
 
 // Argument prototype, eg
@@ -61,7 +61,8 @@ void PARA_addValue(PARA*, const char *);
 void PARA_dispose(PARA*);
 #endif
 
-// 
+// Full argument table, holding all prototypes
+// as well as the read arguments and their parameter
 typedef struct
 {
 	struct __parameter_type *types;

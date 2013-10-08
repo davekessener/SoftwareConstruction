@@ -43,25 +43,6 @@ enum
 	TOK_ROUND
 };
 
-//#define TOK_NONE	 0
-//#define TOK_PLUS	 1
-//#define TOK_MINUS	 2
-//#define TOK_AST		 3
-//#define TOK_SLASH	 4
-//#define TOK_EXP		 5
-//#define TOK_LOG		 6
-//#define TOK_LN		 7
-//#define TOK_SIN		 8
-//#define TOK_COS		 9
-//#define TOK_TAN		10
-//#define TOK_OP		11
-//#define TOK_CP		12
-//#define TOK_PI		13
-//#define TOK_E		14
-//#define TOK_RUP		15
-//#define TOK_RDOWN	16
-//#define TOK_ROUND	17
-
 // Token structure - holds token-id
 // and a number (if applicable)
 typedef struct __token

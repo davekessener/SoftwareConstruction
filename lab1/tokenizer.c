@@ -9,11 +9,12 @@ void TKN_init(TKN *this)
 
 void TKN_load(TKN *this, const char *init)
 {
+	int i, l;
+
 	this->src = strdup(init);
 	this->cp  = this->src;
 	this->pp  = this->src;
 
-	int i, l;
 	for(i = 0, l = strlen(this->src) ; i < l ; i++)
 	{
 		if(this->src[i] >= 'A' && this->src[i] <= 'Z')
@@ -28,6 +29,8 @@ void TKN_load(TKN *this, const char *init)
 T	 TKN_get(TKN *this, TABLE *table)
 {
 	T t;
+	char c, buf[T_BUF_SIZE], *tmp;
+	int p = 0, r;
 
 	assert(this->src!=NULL);
 	assert(this->cp!=NULL);
@@ -37,9 +40,7 @@ T	 TKN_get(TKN *this, TABLE *table)
 	
 	t.type = TAG_NONE;
 
-	char c = *this->cp;
-	char buf[T_BUF_SIZE], *tmp;
-	int p = 0, r;
+	c = *this->cp;
 	
 	if(c == '\0') return t;
 

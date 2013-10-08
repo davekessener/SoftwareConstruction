@@ -95,20 +95,20 @@ int  interpret(DS *stack, const char *input)
 		}
 		else if(BEQ(SM_OP_SIN))
 		{
-			while(v1 > 2.0 * M_PI) v1 -= 2.0 * M_PI;
-			while(v1 < 0.0) v1 += 2.0 * M_PI;
+			while(v1 > 2.0 * PI()) v1 -= 2.0 * PI();
+			while(v1 < 0.0) v1 += 2.0 * PI();
 			DS_push(stack, (FQP) sin((double) v1));
 		}
 		else if(BEQ(SM_OP_COS))
 		{
-			while(v1 > 2.0 * M_PI) v1 -= 2.0 * M_PI;
-			while(v1 < 0.0) v1 += 2.0 * M_PI;
+			while(v1 > 2.0 * PI()) v1 -= 2.0 * PI();
+			while(v1 < 0.0) v1 += 2.0 * PI();
 			DS_push(stack, (FQP) cos((double) v1));
 		}
 		else if(BEQ(SM_OP_TAN))
 		{
-			while(v1 > 2.0 * M_PI) v1 -= 2.0 * M_PI;
-			while(v1 < 0.0) v1 += 2.0 * M_PI;
+			while(v1 > 2.0 * PI()) v1 -= 2.0 * PI();
+			while(v1 < 0.0) v1 += 2.0 * PI();
 			DS_push(stack, (FQP) tan((double) v1));
 		}
 		else if(BEQ(SM_OP_LOG) || BEQ(SM_OP_LG))
