@@ -21,6 +21,11 @@
 #define FQP long double 
 #endif
 
+// Default maximum amount of printed digits
+#ifndef MAX_DIGITS
+#define MAX_DIGITS 8
+#endif
+
 // Defines PI and E globally
 #define PI 3.14159265359
 #define E  2.71828182846
@@ -28,6 +33,8 @@
 // Reads a number from a string, updates pointer
 // position.
 FQP evalNumber(const char**);
+// Print a number in the specified base
+void printNumber(FQP, int, void (*)(char));
 
 #endif
 

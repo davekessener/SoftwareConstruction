@@ -12,6 +12,7 @@ void readParameter(PARAMS *this, int argc, char **argv)
 	this->logFile = stdout;
 	this->command = NULL;
 	this->flags   = FLAG_NONE;
+	this->base    = 10;
 
 	PTABLE_addParameter(&tbl, paramHelp(0),    paramHelp(1),    PARAM_NONE);
 	PTABLE_addParameter(&tbl, paramVerbose(0), paramVerbose(1), PARAM_NONE);
@@ -20,6 +21,7 @@ void readParameter(PARAMS *this, int argc, char **argv)
 	PTABLE_addParameter(&tbl, paramLog(0),     paramLog(1),     PARAM_ONE);
 	PTABLE_addParameter(&tbl, paramCommand(0), paramCommand(1), PARAM_MANY);
 	PTABLE_addParameter(&tbl, paramCrossSum(0), paramCrossSum(1), PARAM_NONE);
+	PTABLE_addParameter(&tbl, paramBase(0),    paramBase(1),    PARAM_ONE);
 
 	PTABLE_read(&tbl, argc, argv);
 
@@ -30,6 +32,40 @@ void readParameter(PARAMS *this, int argc, char **argv)
 		if(PTABLE_hasArgument(&tbl, paramUser(0)))     this->flags |= FLAG_USER;
 		if(PTABLE_hasArgument(&tbl, paramForce(0)))    this->flags |= FLAG_FORCE;
 		if(PTABLE_hasArgument(&tbl, paramCrossSum(0))) this->flags |= FLAG_CROSSSUM;
+		if(PTABLE_hasArgument(&tbl, paramBase(0)))
+		{
+			fn = PTABLE_getValue(&tbl, paramBase(0));
+			if(fn != NULL)
+			{
+				switch(*fn)
+				{
+					case 'b':
+					case 'B':
+						this->base = 2;
+						break;
+					case 'q':
+					case 'Q':
+						this->base = 4;
+						break;
+					case 'o':
+					case 'O':
+						this->base = 8;
+						break;
+					case 'd':
+					case 'D':
+						break;
+					case 'h':
+					case 'H':
+					case 'x':
+					case 'X':
+						this->base = 16;
+						break;
+					default:
+						this->base = (int) evalNumber(&fn);	
+						break;
+				}
+			}
+		}
 		if(PTABLE_hasArgument(&tbl, paramLog(0)))
 		{
 			this->flags |= FLAG_LOG;

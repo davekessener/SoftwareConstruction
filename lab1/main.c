@@ -10,10 +10,14 @@ int main(int argc, char *argv[])
 }
 #endif
 
+void printChar(char c)
+{
+	printf("%c", c);
+}
+
 int executeNumberEvaluator(int argc, char *argv[])
 {
 	char buf[2048];
-	long double r = 0.0L;
 	int err;
 	DS *stack = getStack();
 
@@ -24,11 +28,12 @@ int executeNumberEvaluator(int argc, char *argv[])
 	
 	if(params.flags & FLAG_HELP)
 	{
-		printf("Usage: %s [-h] [-v] [-u] [-x] [-f] [-l logfile] [-c command]\n", argv[0]);
+		printf("Usage: %s [-h] [-v] [-u] [-x] [-b] [-f] [-l logfile] [-c command]\n", argv[0]);
 		printf("\t'-h' prints help.\n");
 		printf("\t'-v' enters verbose mode.\n");
 		printf("\t'-u' enters user-mode.\n");
 		printf("\t'-x' calculates the cross-sum of the result.\n");
+		printf("\t'-b' specifies base of result. Either b|q|o|d|h,x or an positive integer.\n");
 		printf("\t'-f' forces continuation after an error.\n");
 		printf("\t'-l' specifies logfile for verbose mode.\n");
 		printf("\t'-c' allows passing of an expression as argument.\n");
@@ -54,7 +59,10 @@ int executeNumberEvaluator(int argc, char *argv[])
 
 			assert(stack!=NULL&&stack->data!=NULL&&stack->i>0);
 
-			printf("%Lg\n", (long double) stack->data[stack->i - 1]);
+//			printf("%Lg\n", (long double) stack->data[stack->i - 1]);
+			printNumber(stack->data[stack->i - 1], params.base, printChar);
+			if(params.flags & FLAG_VERBOSE) printf("(%d)", params.base);
+			printf("\n");
 		}
 	}
 	else
@@ -85,16 +93,14 @@ int executeNumberEvaluator(int argc, char *argv[])
 				evalStack("xsum");
 			}
 
-			r = (long double) stack->data[stack->i - 1];
-		
 			if(params.flags & FLAG_USER)
 			{
-				printf("%s == %Lg\n", buf, r);
+				printf("%s == ", buf);
 			}
-			else
-			{
-				printf("%Lg\n", r);
-			}
+
+			printNumber(stack->data[stack->i - 1], params.base, printChar);
+			if(params.flags & FLAG_VERBOSE) printf("(%d)", params.base);
+			printf("\n");
 		} while(params.flags & FLAG_USER);
 	}
 

@@ -104,3 +104,51 @@ FQP evalNumber(const char **src)
 	return (FQP) val;
 }
 
+void printNumber(FQP n, int b, void (*pf)(char))
+{
+	const char *digits = (const char *) "0123456789abcdefghijklmnopqrstuvwxyz";
+	char buf[1024];
+	int i, j, k, t;
+
+	if(n < 0)
+	{
+		pf('-');
+		n = -n;
+	}
+
+	if(b <= 0 || b >= strlen(digits)) b = 10;
+
+	i = 0;
+	while(n >= 1)
+	{
+		t = ((long long) n) % b;
+		n = (n - ((long long) n)) + (FQP) (((long long) n) / b);
+		buf[i++] = (char) t;
+	}
+
+	while(i > 0)
+	{
+		pf(digits[buf[--i]]);
+	}
+
+	if(n > 0)
+	{
+		pf('.');
+
+		for(i = 0, j = 0 ; i < MAX_DIGITS ; i++)
+		{
+			n *= b;
+			t = (int) n;
+			n -= t;
+
+			buf[j++] = (char) t;
+			
+			if(t > 0)
+			{
+				for(k = 0 ; k < j ; k++) pf(digits[buf[k]]);
+				j = 0;
+			}
+		}
+	}
+}
+

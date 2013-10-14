@@ -22,11 +22,12 @@ static CSTR paramForce(int i)    { static CSTR v[] = {"f", "force"};     return 
 static CSTR paramLog(int i)      { static CSTR v[] = {"l", "log-file"};  return v[i]; }
 static CSTR paramCommand(int i)  { static CSTR v[] = {"c", "command"};   return v[i]; }
 static CSTR paramCrossSum(int i) { static CSTR v[] = {"x", "cross-sum"}; return v[i]; }
+static CSTR paramBase(int i)	 { static CSTR v[] = {"b", "base"};		 return v[i]; }
 #endif
 
 typedef struct
 {
-	int flags;
+	int flags, base;
 	FILE *logFile;
 	char *command;
 } PARAMS;
