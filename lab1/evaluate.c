@@ -76,7 +76,7 @@ void printToken(P *p, int i) { TOK t; t.type = i; t.val = 0.0; P_print(p, t); }
 // Read next token from the tokenizer of parser 'p'
 T getToken(P *p) { return TKN_get(&p->tokenizer, &p->symtable); }
 
-// Grammar for math-expressions:
+// Simple grammar for mathematical expressions:
 // MATH-EXPR = AS-EXPR
 //   AS-EXPR = MD-EXPR ([+-] MD-EXPR)*
 //   MD-EXPR =  E-EXPR ([*/] E-EXPR)*

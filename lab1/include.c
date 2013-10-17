@@ -104,11 +104,15 @@ FQP evalNumber(const char **src)
 	return (FQP) val;
 }
 
+// Prints a number in base 'b' with at most 'MAX_DIGITS'
+// digits after the decimal point (if necessary)
 void printNumber(FQP n, int b, void (*pf)(char))
 {
+	// All possible digits; allows bases up to 34
 	const char *digits = (const char *) "0123456789abcdefghijklmnopqrstuvwxyz";
 	char buf[1024];
 	int i, j, k, t;
+	long long p;
 
 	if(n < 0)
 	{
@@ -116,33 +120,43 @@ void printNumber(FQP n, int b, void (*pf)(char))
 		n = -n;
 	}
 
+	// Adjust incorrect bases; default to 10/decimal
 	if(b <= 0 || b >= strlen(digits)) b = 10;
 
+	// Extract digit closest to the decimal point until
+	// only zero is left (left of the decimal point)
 	i = 0;
 	while(n >= 1)
 	{
-		t = ((long long) n) % b;
-		n = (n - ((long long) n)) + (FQP) (((long long) n) / b);
-		buf[i++] = (char) t;
+		p = (long long) n; // Cast to long long to get rid of the fractional part of the decimal
+		t = p % b; // Get first digit left of the decimal point
+		n = (n - p) + (FQP) (p / b); // Shift p right one digit in base 'b', add fractional part
+		buf[i++] = digits[t]; // Store char representing the extracted digit
 	}
 
+	// Print the extracted digits in reverse order
+	// (left to right)
 	while(i > 0)
 	{
 		pf(digits[buf[--i]]);
 	}
 
+	// If the is a fractional part left
 	if(n > 0)
 	{
+		// Print decimal point
 		pf('.');
 
+		// Print 'MAX_DIGITS' digits at most
 		for(i = 0, j = 0 ; i < MAX_DIGITS ; i++)
 		{
-			n *= b;
-			t = (int) n;
-			n -= t;
+			n *= b; // Shift number left one digit in base 'b'
+			t = (int) n; // Discard fractional part to extract the former first digit to the right of the decimal point
+			n -= t; // Discard integer part of the number
 
-			buf[j++] = (char) t;
+			buf[j++] = digits[t]; // Buffer char representing extracted digit
 			
+			// If current digit is not zero, flush buffer
 			if(t > 0)
 			{
 				for(k = 0 ; k < j ; k++) pf(digits[buf[k]]);
