@@ -138,7 +138,7 @@ void printNumber(FQP n, int b, void (*pf)(char))
 	// (left to right)
 	while(i > 0)
 	{
-		pf(digits[buf[--i]]);
+		pf(buf[--i]);
 	}
 
 	// If the is a fractional part left
@@ -159,7 +159,7 @@ void printNumber(FQP n, int b, void (*pf)(char))
 			// If current digit is not zero, flush buffer
 			if(t > 0)
 			{
-				for(k = 0 ; k < j ; k++) pf(digits[buf[k]]);
+				for(k = 0 ; k < j ; k++) pf(buf[k]);
 				j = 0;
 			}
 		}
