@@ -102,6 +102,10 @@ int main(int argc, char *argv[])
 	}
 
 	WDA_dispose(&wda);
+
+#ifndef UNIX
+	system("pause>NUL");
+#endif
 	
 	return EXIT_SUCCESS;
 }

@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//#define WINDOWS
-
-#ifdef WINDOWS
+#ifndef UNIX
 #include <conio.h> // NOT ANSI STANDARD!
 #else
 #include "conio_e.h"
@@ -13,7 +11,7 @@ int main(int argc, char *argv[])
 {
 	char ch;
 
-#ifndef WINDOWS
+#ifdef UNIX
 	// If compiled on a UNIX based system,
 	// manually set up tty to emulate windows behavior
 	// (This function registers a function hook to restore
@@ -40,7 +38,7 @@ int main(int argc, char *argv[])
 				break;
 			}
 
-#ifndef WINDOWS
+#ifdef UNIX
 			// Flush stdout manually
 			fflush(stdout);
 #endif
@@ -52,7 +50,7 @@ int main(int argc, char *argv[])
 	//  still emulates windows.)
 	printf("\r\n");
 
-#ifdef WINDOWS
+#ifndef UNIX
 	system("pause>NUL");
 #endif
 
