@@ -4,6 +4,7 @@ class Node
 	attr_reader :ID, :incs, :libs, :deps, :objs, :exec, :cmds
 	@@libraries = {:math => '-lm'}
 	@@cflags = '-Wall -pedantic -std=c99 -ggdb -O0 -Wno-psabi'
+	@@macros = '-DUNIX'
 
 	def initialize(fn)
 		@ID = fn
@@ -106,8 +107,8 @@ class Node
 		return false
 	end
 
-	def self.build(flags = @@cflags)
-		head = "CC=cc\nCFLAGS=#{flags}\nMACROS=\n\n"
+	def self.build(flags = @@cflags, macros = @@macros)
+		head = "CC=cc\nCFLAGS=#{flags}\nMACROS=#{macros}\n\n"
 		obj = ""
 		exec = ""
 		all = []

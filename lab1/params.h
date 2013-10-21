@@ -2,6 +2,7 @@
 #define __PArAMS_H
 
 #include <stdlib.h>
+#include "include.h"
 #include "parameter.h"
 
 #define FLAG_NONE 0

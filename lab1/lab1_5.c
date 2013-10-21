@@ -2,28 +2,34 @@
 
 int main(int argc, char *argv[])
 {
-	int i, r;
+	int i, r, s;
 	char **tmp;
 
-	tmp = malloc((argc + 2) * sizeof(char *));
+	s = argc > 1 ? 2 : 1;
+
+	tmp = malloc((argc + s) * sizeof(char *));
 	tmp[0] = strdup(argv[0]);
 	tmp[1] = strdup("-x");
-	tmp[2] = strdup("-c");
 
-	for(i = 3 ; i < argc + 2 ; i++)
+	if(argc > 1)
 	{
-		tmp[i] = strdup(argv[i - 2]);
+		tmp[2] = strdup("-c");
+	
+		for(i = 3 ; i < argc + 2 ; i++)
+		{
+			tmp[i] = strdup(argv[i - 2]);
+		}
 	}
 
-	r = executeNumberEvaluator(argc + 2, tmp);
+	r = executeNumberEvaluator(argc + s, tmp);
 
-	for(i = 0 ; i < argc + 2 ; i++)
+	for(i = 0 ; i < argc + s ; i++)
 	{
 		free(tmp[i]);
 	}
 	free(tmp);
 
-#ifdef WINDOWS
+#ifndef UNIX
 	system("pause>NUL");
 #endif
 
