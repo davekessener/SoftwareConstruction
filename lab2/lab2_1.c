@@ -91,7 +91,21 @@ int main(int argc, char *argv[])
 		// If the input isn't valid break
 		if(checkInput(in))
 		{
-			break;
+			if(strcmp(in, "quit") == 0 || (*in == 'q' && !in[1]))
+			{
+				break;
+			}
+			else
+			{
+				fprintf(stderr, "!!! Invalid input!\n!!! Please enter four"
+					" whitespace-separated real numbers.\n!!! Or type "
+					"'quit' or 'q' to quit.\n"
+#ifdef UNIX
+					"!!! (Or CTRL-C to abort.)\n"
+#endif
+					);
+				continue;
+			}
 		}
 
 		// Add read data-set to the data-buffer

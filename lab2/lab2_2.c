@@ -5,11 +5,18 @@
 #include <conio.h> // NOT ANSI STANDARD!
 #else
 #include "conio_e.h"
+#define KEY_CTRL_C 3
+#define KEY_CTRL_D 4
 #endif
+
+#define KEY_ESC 27
 
 int main(int argc, char *argv[])
 {
 	char ch;
+
+	printf("Only alphanumerical characters will be echoed to the\n"
+		   "terminal. Press ESC to quit.\n");
 
 #ifdef UNIX
 	// If compiled on a UNIX based system,
@@ -33,12 +40,19 @@ int main(int argc, char *argv[])
 				printf("%c", ch);
 			}
 			// Else if the escape key has been pressed, break and quit.
-			else if(ch == 27)
+			else if(ch == KEY_ESC)
 			{
 				break;
 			}
-
 #ifdef UNIX
+			// Reimplement escape characters
+			else if(ch == KEY_CTRL_C || ch == KEY_CTRL_D)
+			{
+				if(ch == KEY_CTRL_C) printf("^C");
+
+				break;
+			}
+
 			// Flush stdout manually
 			fflush(stdout);
 #endif
