@@ -1,7 +1,12 @@
 #!/bin/bash
 
-zip lab1.zip lab1/
-zip lab2.zip lab2/
+for dir in `ls | sed -n '/lab/ p'`
+do
+	if [ -d "$dir" ]; then
+		rm -f "$dir.zip"
+		zip -r9 "$dir.zip" "$dir/"
+	fi
+done
 
 git add .
 git commit -m "Regular update."
