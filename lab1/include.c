@@ -22,8 +22,15 @@ FQP evalNumber(const char **src)
 	{
 		c = *line++;
 
+		// A single zero is just zero.
+		if(c == '\0')
+		{
+			*src = line - 1;
+
+			return (FQP) 0;
+		}
 		// A '0' followed by an 'x' -> Hexadecimal
-		if(c == 'x')
+		else if(c == 'x')
 		{
 			c = *line++;
 			base = 16;
@@ -126,13 +133,14 @@ void printNumber(FQP n, int b, void (*pf)(char))
 	// Extract digit closest to the decimal point until
 	// only zero is left (left of the decimal point)
 	i = 0;
-	while(n >= 1)
+	do
 	{
 		p = (long long) n; // Cast to long long to get rid of the fractional part of the decimal
 		t = p % b; // Get first digit left of the decimal point
 		n = (n - p) + (FQP) (p / b); // Shift p right one digit in base 'b', add fractional part
 		buf[i++] = digits[t]; // Store char representing the extracted digit
 	}
+	while(n >= 1);
 
 	// Print the extracted digits in reverse order
 	// (left to right)

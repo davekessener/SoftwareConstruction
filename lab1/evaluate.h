@@ -34,7 +34,15 @@ enum
 	TOK_E,
 	TOK_RUP,
 	TOK_RDOWN,
-	TOK_ROUND
+	TOK_ROUND,
+	TOK_LAND,
+	TOK_LOR,
+	TOK_LNOT,
+	TOK_AND,
+	TOK_OR,
+	TOK_NOT,
+	TOK_XOR,
+	TOK_PERC
 };
 
 // Token structure - holds token-id
@@ -65,10 +73,14 @@ void evalAS(P *);
 void evalMD(P *);
 // Evaluate exponentiation
 void evalE(P *);
-// Evaluate unary operations (negation)
+// Evaluate unary operations (negation, bitwise-negation, logical not ...)
 void evalU(P *);
 // Evaluate trig-fuctions, logarithm, etc.
 void evalTL(P *);
+// Evaluate bitwise operations
+void evalAOX(P *);
+// Evaluate logical operations
+void evalLAO(P *);
 // Evaluate a constant
 void evalC(P *);
 

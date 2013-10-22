@@ -20,6 +20,7 @@ FQP  DS_pop(DS *this)
 	FQP f;
 
 	assert(this->i > 0);
+
 	f = this->data[--this->i];
 	DS_resize(this);
 	

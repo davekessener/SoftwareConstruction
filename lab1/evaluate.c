@@ -29,13 +29,21 @@ int evaluate(const char *src)
 	TADD("#v", TOK_RDOWN);
 	TADD("#-", TOK_ROUND);
 	TADD("##", TOK_ROUND);
+	TADD("&&", TOK_LAND);
+	TADD("||", TOK_LOR);
+	TADD("!", TOK_LNOT);
+	TADD("&", TOK_AND);
+	TADD("|", TOK_OR);
+	TADD("~", TOK_NOT);
+	TADD("^", TOK_XOR);
+	TADD("%", TOK_PERC);
 #undef TADD
 
 	// Load the input string into the tokenizer
 	TKN_load(&parser.tokenizer, src);
 
 	// Evaluate the expression
-	evalAS(&parser);
+	evalLAO(&parser);
 
 	// If the read buffer isn't empty
 	// (The tokenizer couldn't read the entire input string)
@@ -77,14 +85,47 @@ void printToken(P *p, int i) { TOK t; t.type = i; t.val = 0.0; P_print(p, t); }
 T getToken(P *p) { return TKN_get(&p->tokenizer, &p->symtable); }
 
 // Simple grammar for mathematical expressions:
-// MATH-EXPR = AS-EXPR
+// MATH-EXPR = LAO-EXPR
+//  LAO-EXPR = AS-EXPR ([&&,||] AS-EXPR)*
 //   AS-EXPR = MD-EXPR ([+-] MD-EXPR)*
-//   MD-EXPR =  E-EXPR ([*/] E-EXPR)*
-//    E-EXPR =  U-EXPR ('**'  E-EXPR)?
-//    U-EXPR = [+-]? TL-EXPR
+//   MD-EXPR =  E-EXPR ([*/%] E-EXPR)*
+//    E-EXPR = AOX-EXPR ('**'  E-EXPR)?
+//  AOX-EXPR =  U-EXPR ([&^|] U-EXPR)*
+//    U-EXPR = [+-!~]? TL-EXPR
 //   TL-EXPR = (sin|cos|tan|log|lg|ln|...)? C-EXPR
 //    C-EXPR =   number-constant  // ((0[xb]?)?[0-9a-fA-F]*\.?[0-9a-fA-F]+)
-//             | '(' AS-EXPR ')'
+//             | '(' LAO-EXPR ')'
+void evalLAO(P *p)
+{
+	T t;
+
+	evalAS(p);
+
+	t = getToken(p);
+
+	while(t.type == TAG_TAG)
+	{
+		if(t.data.tag == TOK_LAND)
+		{
+			evalAS(p);
+			printToken(p, SM_OP_LAND);
+		}
+		else if(t.data.tag == TOK_LOR)
+		{
+			evalAS(p);
+			printToken(p, SM_OP_LOR);
+		}
+		else
+		{
+			break;
+		}
+	
+		t = getToken(p);
+	}
+
+	TKN_unget(&p->tokenizer);
+}
+
 void evalAS(P *p)
 {
 	T t;
@@ -136,6 +177,11 @@ void evalMD(P *p)
 			evalE(p);
 			printToken(p, SM_OP_DIV);
 		}
+		else if(t.data.tag == TOK_PERC)
+		{
+			evalE(p);
+			printToken(p, SM_OP_MOD);
+		}
 		else
 		{
 			break;
@@ -151,7 +197,7 @@ void evalE(P *p)
 {
 	T t;
 
-	evalU(p);
+	evalAOX(p);
 
 	t = getToken(p);
 
@@ -164,6 +210,42 @@ void evalE(P *p)
 	{
 		TKN_unget(&p->tokenizer);
 	}
+}
+
+void evalAOX(P *p)
+{
+	T t;
+
+	evalU(p);
+
+	t = getToken(p);
+
+	while(t.type == TAG_TAG)
+	{
+		if(t.data.tag == TOK_AND)
+		{
+			evalU(p);
+			printToken(p, SM_OP_AND);
+		}
+		else if(t.data.tag == TOK_OR)
+		{
+			evalU(p);
+			printToken(p, SM_OP_OR);
+		}
+		else if(t.data.tag == TOK_XOR)
+		{
+			evalU(p);
+			printToken(p, SM_OP_XOR);
+		}
+		else
+		{
+			break;
+		}
+	
+		t = getToken(p);
+	}
+
+	TKN_unget(&p->tokenizer);
 }
 
 void evalU(P *p)
@@ -181,6 +263,14 @@ void evalU(P *p)
 				evalTL(p);
 				printToken(p, SM_OP_NEG);
 				return;
+//			case TOK_LNOT:
+//				evalTL(p);
+//				printToken(p, SM_OP_LNOT);
+//				return
+//			case TOK_NOT:
+//				evalTL(p);
+//				printToken(p, SM_OP_NOT);
+//				return;
 		}
 	}
 
@@ -261,7 +351,7 @@ void evalC(P *p)
 		}
 		else if(t.data.tag == TOK_OP)
 		{
-			evalAS(p);
+			evalLAO(p);
 			t = getToken(p); 
 			assert(t.type==TAG_TAG&&t.data.tag==TOK_CP);
 		}

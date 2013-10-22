@@ -22,7 +22,7 @@ int  interpret(DS *stack, const char *input)
 	}
 	else 
 	{
-		if(stack->c < 1) return SM_ERR_EMPTY;
+		if(stack->c <= 0) return SM_ERR_EMPTY;
 		v1 = DS_pop(stack);
 
 		if(BEQ(SM_OP_NEG))
@@ -81,6 +81,14 @@ int  interpret(DS *stack, const char *input)
 			}
 			DS_push(stack, v1);
 		}
+		else if(BEQ(SM_OP_LNOT))
+		{
+			DS_push(stack, !v1);
+		}
+		else if(BEQ(SM_OP_NOT))
+		{
+			DS_push(stack, ~((long long) v1));
+		}
 		else
 		{
 			if(stack->c < 1) return SM_ERR_EMPTY;
@@ -105,6 +113,30 @@ int  interpret(DS *stack, const char *input)
 			else if(BEQ(SM_OP_EXP))
 			{
 				DS_push(stack, (FQP) pow((double) v2, (double) v1));
+			}
+			else if(BEQ(SM_OP_LAND))
+			{
+				DS_push(stack, (FQP) (v1 && v2));
+			}
+			else if(BEQ(SM_OP_LOR))
+			{
+				DS_push(stack, (FQP) (v1 || v2));
+			}
+			else if(BEQ(SM_OP_AND))
+			{
+				DS_push(stack, (FQP) ((long long)v1 & (long long)v2));
+			}
+			else if(BEQ(SM_OP_OR))
+			{
+				DS_push(stack, (FQP) ((long long)v1 | (long long)v2));
+			}
+			else if(BEQ(SM_OP_XOR))
+			{
+				DS_push(stack, (FQP) ((long long)v1 ^ (long long)v2));
+			}
+			else if(BEQ(SM_OP_MOD))
+			{
+				DS_push(stack, (FQP) ((long long)v2 % (long long)v1));
 			}
 			else
 			{

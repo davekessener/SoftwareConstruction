@@ -33,7 +33,15 @@ enum SM_OP
 	SM_OP_RUP,	
 	SM_OP_RDWN,
 	SM_OP_RND,	
-	SM_OP_XSUM
+	SM_OP_XSUM,
+	SM_OP_LAND,
+	SM_OP_LOR,
+	SM_OP_LNOT,
+	SM_OP_AND,
+	SM_OP_OR,
+	SM_OP_NOT,
+	SM_OP_XOR,
+	SM_OP_MOD
 };
 
 static const char *SM_OP_Instructions(int i)
@@ -55,7 +63,15 @@ static const char *SM_OP_Instructions(int i)
 		"rup", 
 		"rdown", 
 		"round",
-		"xsum"};
+		"xsum",
+		"land",
+		"lor",
+		"lnot",
+		"and",
+		"or",
+		"not",
+		"xor",
+		"mod"};
 	
 	return SM_OP_INS[i];
 }
