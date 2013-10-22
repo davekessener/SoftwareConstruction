@@ -1,3 +1,9 @@
+/* Header with prototypes for the argument-scanning
+ * routines for 'main.c' that rely on the general
+ * purpose argument-scanner of parameter.c
+ * File: params.h for params.c
+ * Daniel Kessener, HAW
+ */
 #ifndef __PARAMS_H
 #define __PArAMS_H
 

@@ -1,3 +1,9 @@
+/* Header for tokenizing routine. It simplifies parsing
+ * by separating the input into tokens specified by the
+ * parser.
+ * File: tokenizer.h for tokenizer.c
+ * Daniel Kessener, HAW
+ */
 #ifndef __TOKENIZER_H
 #define __TOKENIZER_H
 

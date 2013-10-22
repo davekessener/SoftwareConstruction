@@ -1,3 +1,9 @@
+/* Header for the log-routines. Specifies the DLOG macro
+ * for savely using the log-function. Also allows to set
+ * log function (function that accepts a string as argument)
+ * File: logger.h for logger.c
+ * Daniel Kessener, HAW
+ */
 #ifndef __LOGGER_H
 #define __LOGGER_H
 

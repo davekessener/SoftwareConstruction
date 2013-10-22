@@ -1,3 +1,7 @@
+/* Header for the DStack struct. 
+ * File: dstack.h for dstack.c
+ * Daniel Kessener, HAW
+ */
 #ifndef __DSTACK_H
 #define __DSTACK_H
 

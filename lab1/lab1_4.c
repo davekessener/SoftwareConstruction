@@ -1,3 +1,7 @@
+/* Solution for Assignment 4 of Lab 1 in Software Construction
+ * File: lab1_4c
+ * Daniel Kessener, HAW
+ */
 #include <stdio.h>
 #include <stdlib.h>
 

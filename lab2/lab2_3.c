@@ -1,7 +1,9 @@
-/*#include "main.h"*/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+/* Solution for assignment 3 of Lab 2 in Software Construction
+ * File: lab2_3.c
+ * Includes: main.h include.h evaluate.h stackmachine.h tokenizer.h
+ *           dstack.h logger.h params.h parameter.h 
+ */
+#include "main.h"
 
 #define BUF_SIZE 1024
 

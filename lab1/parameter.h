@@ -1,3 +1,8 @@
+/* Header for the PTABLE struct that holds the
+ * scanned arguments parsed via 'PTABLE_read'.
+ * File: parameter.h for parameter.c
+ * Daniel Kessener, HAW
+ */
 #ifndef __PARAMETER_H
 #define __PARAMETER_H
 

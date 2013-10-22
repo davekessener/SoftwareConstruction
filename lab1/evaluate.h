@@ -1,3 +1,9 @@
+/* Evaluation routine that parses the input string
+ * and converts it into postfix notation that can be
+ * read and evaluated by the stackmachine
+ * File: evaluate.h for evaluate.c
+ * Daniel Kessener, HAW
+ */
 #ifndef __EVALUATE_H
 #define __EVALUATE_H
 

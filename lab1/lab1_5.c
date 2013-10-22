@@ -1,3 +1,9 @@
+/* Solution for Assignment 5 of Lab 1 in Software Construction
+ * File:     lab1_5.c
+ * Includes: main.h include.h evaluate.h stackmachine.h
+ *           params.h parameter.h logger.h dstack.h tokenizer.h
+ * Daniel Kessener, HAW
+ */
 #include "main.h"
 
 int main(int argc, char *argv[])

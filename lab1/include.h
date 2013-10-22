@@ -1,3 +1,8 @@
+/* Header for include.c that contains auxiliary function
+ * used to read/print numbers
+ * File: include.h for include.c
+ * Daniel Kessener, HAW
+ */
 #ifndef __INCLUDE_H
 #define __INCLUDE_H
 

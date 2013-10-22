@@ -1,3 +1,7 @@
+/* Solution for Assignment 2 of Lab 2 in Software Construction
+ * File: lab2_2.c
+ * Daniel Kessener, HAW
+ */
 #include <stdio.h>
 #include <stdlib.h>
 

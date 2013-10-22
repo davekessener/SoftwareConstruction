@@ -1,3 +1,8 @@
+/* Header to be included to use the function
+ * that evaluates simple mathematical expression
+ * File: main.h for main.c
+ * Daniel Kessener, HAW
+ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
