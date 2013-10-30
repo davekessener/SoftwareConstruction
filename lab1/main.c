@@ -28,18 +28,21 @@ int executeNumberEvaluator(int argc, char *argv[])
 	// If the 'HELP'-flag was given, print usage and quit
 	if(params.flags & FLAG_HELP)
 	{
-		printf("Usage: %s [-h] [-v] [-u] [-x] [-b base] [-f] [-l logfile] [-c command]\n", argv[0]);
+		printf("Usage: %s [-h] [-v] [-u] [-x] [-b base] [-d digits] [-f] [-l logfile] [-c command]\n", argv[0]);
 		printf("\t'-h' prints help.\n");
 		printf("\t'-v' enters verbose mode.\n");
 		printf("\t'-u' enters user-mode.\n");
 		printf("\t'-x' calculates the cross-sum of the result.\n");
 		printf("\t'-b' specifies base of result. Either b|q|o|d|h,x or an positive integer.\n");
+		printf("\t'-d' specifies the amount of digits printed after the decimal separator.\n");
 		printf("\t'-f' forces continuation after an error.\n");
 		printf("\t'-l' specifies logfile for verbose mode.\n");
 		printf("\t'-c' allows passing of an expression as argument.\n");
 
 		return EXIT_SUCCESS;
 	}
+
+	*MAX_DIGITS() = params.digits;
 
 	// If 'VERBOSE'-flag is given, set Logger function
 	// (Defaults to stdout)

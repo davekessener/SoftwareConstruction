@@ -13,6 +13,7 @@ void readParameter(PARAMS *this, int argc, char **argv)
 	this->command = NULL;
 	this->flags   = FLAG_NONE;
 	this->base    = 10;
+	this->digits  = 8;
 
 	PTABLE_addParameter(&tbl, paramHelp(0),    paramHelp(1),    PARAM_NONE);
 	PTABLE_addParameter(&tbl, paramVerbose(0), paramVerbose(1), PARAM_NONE);
@@ -22,6 +23,7 @@ void readParameter(PARAMS *this, int argc, char **argv)
 	PTABLE_addParameter(&tbl, paramCommand(0), paramCommand(1), PARAM_MANY);
 	PTABLE_addParameter(&tbl, paramCrossSum(0), paramCrossSum(1), PARAM_NONE);
 	PTABLE_addParameter(&tbl, paramBase(0),    paramBase(1),    PARAM_ONE);
+	PTABLE_addParameter(&tbl, paramDigits(0),  paramDigits(1),  PARAM_ONE);
 
 	PTABLE_read(&tbl, argc, argv);
 
@@ -32,6 +34,16 @@ void readParameter(PARAMS *this, int argc, char **argv)
 		if(PTABLE_hasArgument(&tbl, paramUser(0)))     this->flags |= FLAG_USER;
 		if(PTABLE_hasArgument(&tbl, paramForce(0)))    this->flags |= FLAG_FORCE;
 		if(PTABLE_hasArgument(&tbl, paramCrossSum(0))) this->flags |= FLAG_CROSSSUM;
+
+		if(PTABLE_hasArgument(&tbl, paramDigits(0)))
+		{
+			fn = PTABLE_getValue(&tbl, paramDigits(0));
+
+			if(fn != NULL)
+			{
+				this->digits = (int) evalNumber(&fn);
+			}
+		}
 		if(PTABLE_hasArgument(&tbl, paramBase(0)))
 		{
 			fn = PTABLE_getValue(&tbl, paramBase(0));

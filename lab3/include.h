@@ -18,6 +18,7 @@
 #include <errno.h>
 #include <string.h>
 #include <assert.h>
+#include <math.h>
 
 // Default to using long doubles if there
 // was no number-type predefined with the
@@ -27,7 +28,9 @@
 #endif
 
 // Default maximum amount of printed digits
-int *MAX_DIGITS(void);
+#ifndef MAX_DIGITS
+#define MAX_DIGITS 8
+#endif
 
 // Defines PI and E globally
 #define PI 3.1415926535897932384626433832795028841971693993751058
@@ -38,6 +41,10 @@ int *MAX_DIGITS(void);
 FQP evalNumber(const char**);
 // Print a number in the specified base
 void printNumber(FQP, int, void (*)(char));
+
+short read_short(const char *);
+double read_double(const char *);
+long double P_PI(void);
 
 #endif
 

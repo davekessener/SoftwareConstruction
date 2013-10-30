@@ -30,11 +30,12 @@ static CSTR paramLog(int i)      { static CSTR v[] = {"l", "log-file"};  return 
 static CSTR paramCommand(int i)  { static CSTR v[] = {"c", "command"};   return v[i]; }
 static CSTR paramCrossSum(int i) { static CSTR v[] = {"x", "cross-sum"}; return v[i]; }
 static CSTR paramBase(int i)	 { static CSTR v[] = {"b", "base"};		 return v[i]; }
+static CSTR paramDigits(int i)   { static CSTR v[] = {"d", "digits"};	 return v[i]; }
 #endif
 
 typedef struct
 {
-	int flags, base;
+	int flags, base, digits;
 	FILE *logFile;
 	char *command;
 } PARAMS;

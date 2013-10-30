@@ -1,5 +1,27 @@
 #include "include.h"
 
+#define readX(x) x read_##x (const char *in) \
+{ \
+	char buf[BUF_SIZE], *tmp; \
+	if(in) \
+	{ \
+		strncpy(buf, in, BUF_SIZE - 1); \
+	} \
+	else \
+	{ \
+		if(!gets(buf)) \
+		{ \
+			fprintf(stderr, "ERR: Couldn't read from stdin.\nAbort.\n"); \
+			exit(EXIT_FAILURE); \
+		} \
+	} \
+	tmp = buf; \
+	return ( x ) evalNumber(&tmp); \
+}
+
+readX(short)
+readX(double)
+
 // Is the character c somewhere within the string l?
 int isIn(const char *l, char c) { while(*l) { if(*l == c) return 1; l++; } return 0; }
 
@@ -10,10 +32,18 @@ FQP evalNumber(const char **src)
 
 	long double val = 0.0;
 	int base = 10, off = 1;
-	int dec = 0, f = 0, v;
+	int dec = 0, f = 0, s = 1, v;
 
 	// Read next character
 	char c = *line++;
+
+	// If the first character is a '-'
+	// set sign-variable to -1
+	if(c == '-')
+	{
+		s = -1;
+		c = *line++;
+	}
 
 	// If the first character is a zero ...
 	// (Indicates either a hexadecimal number '0x...',
@@ -108,7 +138,7 @@ FQP evalNumber(const char **src)
 	*src = line - 1;
 
 	// Cast to desired number format and return result
-	return (FQP) val;
+	return (FQP) (s * val);
 }
 
 // Prints a number in base 'b' with at most 'MAX_DIGITS'
@@ -156,7 +186,7 @@ void printNumber(FQP n, int b, void (*pf)(char))
 		pf('.');
 
 		// Print 'MAX_DIGITS' digits at most
-		for(i = 0, j = 0 ; i < *MAX_DIGITS() ; i++)
+		for(i = 0, j = 0 ; i < MAX_DIGITS ; i++)
 		{
 			n *= b; // Shift number left one digit in base 'b'
 			t = (int) n; // Discard fractional part to extract the former first digit to the right of the decimal point
@@ -174,9 +204,8 @@ void printNumber(FQP n, int b, void (*pf)(char))
 	}
 }
 
-int *MAX_DIGITS(void)
+long double P_PI(void)
 {
-	static int v = 8;
-	return &v;
+	return 4.0L * atan(1.0);
 }
 

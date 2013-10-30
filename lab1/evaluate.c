@@ -381,7 +381,7 @@ void P_print(P *this, TOK t)
 
 	if(t.type == SM_OP_PUSH)
 	{
-		sprintf(buf, "%s %Lg", SM_OP_Instructions(SM_OP_PUSH), t.val);
+		sprintf(buf, "%s %.*Lf", SM_OP_Instructions(SM_OP_PUSH), *MAX_DIGITS(), t.val);
 	}
 	else
 	{
