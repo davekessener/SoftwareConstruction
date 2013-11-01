@@ -44,7 +44,6 @@ void printNumber(FQP, int, void (*)(char));
 
 short read_short(const char *);
 double read_double(const char *);
-long double P_PI(void);
 
 #endif
 

@@ -204,8 +204,3 @@ void printNumber(FQP n, int b, void (*pf)(char))
 	}
 }
 
-long double P_PI(void)
-{
-	return 4.0L * atan(1.0);
-}
-
