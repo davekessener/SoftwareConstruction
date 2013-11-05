@@ -2,19 +2,35 @@
  * File: lab2_3.c
  * Includes: main.h include.h evaluate.h stackmachine.h tokenizer.h
  *           dstack.h logger.h params.h parameter.h 
+ * A/N: All included files are directly copied from Lab 1 Assignement 5
+ * Test cases:
+ && 0 0
+ = 0
+
+ || 0 1
+ = 1
+
+ ~ 4
+ = -5
+
+ & 10 2
+ = 2
+
+ | 10 7
+ = 15
  */
 #include "main.h"
 
 #define BUF_SIZE 1024
 
-int checkInput(const char *);
+int checkInput(char *);
 char *reorder(const char *);
 
 int main(int argc, char *argv[])
 {
 	char buf[BUF_SIZE];
 	char **tmp;
-	int i;
+	int i, r;
 
 	// Initialize argument buffer
 	// It will contain arguments for the
@@ -29,8 +45,10 @@ int main(int argc, char *argv[])
 
 	while(1)
 	{
+		fflush(stdout);
+
 		// Print prompt
-		printf("# Enter logical expression in prefix notation\n"
+		printf("# Enter logical expression ('&&', '||', '&', '|', '!', '~') in prefix notation\n"
 			   "# Or enter 'q' or 'quit' to exit.\n");
 
 		// If stdin cannot correctly be read from,
@@ -72,7 +90,9 @@ int main(int argc, char *argv[])
 		}
 
 		// Call evaluation, continue loop.
+		printf("= ");
 		r = executeNumberEvaluator(3, tmp);
+		printf("\n");
 	}
 
 	// Free arguments
@@ -86,7 +106,7 @@ int main(int argc, char *argv[])
 	return EXIT_SUCCESS;
 }
 
-int checkInput(const char *line)
+int checkInput(char *line)
 {
 	char c;
 
@@ -107,8 +127,21 @@ int checkInput(const char *line)
 		if(c >= 'A' && c <= 'Z') c -= 'A' - 'a';
 
 		// Return error if an invalid character is encountered
-		if(c != '&' && c != '|' && c != '!' && c != '~' && (c < '0' || c > '9') &&
-			c != 'b' && c != 'h' && c != 'x' && c != 'd') return 1;
+		switch(c)
+		{
+			case '&':
+			case '|':
+			case '!':
+			case '~':
+			case 'b':
+			case 'h':
+			case 'o':
+			case 'd':
+			case 'x':
+				break;
+			default:
+				if(c < '0' || c > '9') return 1;
+		}
 	}
 
 	// Read expression is valid.
@@ -117,6 +150,7 @@ int checkInput(const char *line)
 
 char *reorder(const char *line)
 {
+	int c;
 	// Buffer for operator and operants 1 and 2.
 	char op[BUF_SIZE / 4], op1[BUF_SIZE / 4], op2[BUF_SIZE / 4];
 	// Buffer for final expression.
@@ -124,9 +158,17 @@ char *reorder(const char *line)
 
 	// Unless exactly three whitespace-separated strings of valid character
 	// are encountered return an error (NULL)
-	if(sscanf(line, " %s %s %s ", op, op1, op2) != 3)
+	if((c = sscanf(line, " %s %s %s ", op, op1, op2)) != 3)
 	{
-		return NULL;
+		if(c == 2 && (strcmp(op, "!") == 0 || strcmp(op, "~") == 0))
+		{
+			sprintf(expr, "%s%s", op, op1);
+			return strdup(expr);
+		}
+		else
+		{
+			return NULL;
+		}
 	}
 
 	// Concatenate the oprator and operants in infix notation
