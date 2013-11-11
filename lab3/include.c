@@ -1,27 +1,5 @@
 #include "include.h"
 
-#define readX(x) x read_##x (const char *in) \
-{ \
-	char buf[BUF_SIZE], *tmp; \
-	if(in) \
-	{ \
-		strncpy(buf, in, BUF_SIZE - 1); \
-	} \
-	else \
-	{ \
-		if(!gets(buf)) \
-		{ \
-			fprintf(stderr, "ERR: Couldn't read from stdin.\nAbort.\n"); \
-			exit(EXIT_FAILURE); \
-		} \
-	} \
-	tmp = buf; \
-	return ( x ) evalNumber(&tmp); \
-}
-
-readX(short)
-readX(double)
-
 // Is the character c somewhere within the string l?
 int isIn(const char *l, char c) { while(*l) { if(*l == c) return 1; l++; } return 0; }
 

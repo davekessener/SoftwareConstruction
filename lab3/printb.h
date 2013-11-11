@@ -13,5 +13,7 @@ char *getCharBuf();
 
 const char *printb(void *, size_t, char *, size_t);
 
+short read_short(const char *);
+
 #endif
 

@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "include.h"
 #include "printb.h"
 
 #define SWAPMLSB(v) ((((short)(v))&0x7FFE)|((((short)(v))&0x8000)>>15)|((((short)(v))&0x0001)<<15))

@@ -42,8 +42,5 @@ FQP evalNumber(const char**);
 // Print a number in the specified base
 void printNumber(FQP, int, void (*)(char));
 
-short read_short(const char *);
-double read_double(const char *);
-
 #endif
 
