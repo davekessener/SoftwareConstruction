@@ -1,3 +1,7 @@
+/* Solution for Assignment 1 of Lab 4 in Software Construction
+ * File: lab4_1.c
+ * Daniel Kessener, HAW 2159858
+ */
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,11 +10,13 @@
 #define M 5
 #define BYTE_SIZE 8
 
+// Macro to reset the MSB
 #define RSTMSB(v) ((v)=(v)&~(1<<(sizeof(v)*BYTE_SIZE-1)))
 
 void clear_MSBs(unsigned char[], unsigned char[]);
 const char *printbin(uint8_t, char *);
 
+// Is 'v' in the array 'a'
 int isin(unsigned char v, unsigned char a[], size_t s) {int i; for(i = 0 ; i < s ; i++) if(a[i] == v) return 1; return 0; }
 
 int main(int argc, char *argv[])
