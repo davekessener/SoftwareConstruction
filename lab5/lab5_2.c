@@ -38,7 +38,8 @@ int main(int argc, char *argv[])
 		t = (uint32_t) rand();
 		for(i = 0 ; i < NUMBER_OF_DICE ; i++)
 		{
-			throws[i] = ((t >> (i * 3)) & 7) % POSSIBLE_DICE_VALUES;
+			throws[i] = t % POSSIBLE_DICE_VALUES;
+			t /= POSSIBLE_DICE_VALUES;
 		}
 
 		display(dice(), throws);
