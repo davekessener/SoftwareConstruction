@@ -91,7 +91,10 @@ int check_for_doubles(int *t)
 	int i;
 	for(i = 0 ; i < NUMBER_OF_DICE - 1 ; i++)
 	{
-		if(t[i] == t[i + 1] && (i == NUMBER_OF_DICE - 2 || t[i + 1] != t[i + 2])) dc++;
+		if(t[i] == t[i + 1] 
+			&& (i == NUMBER_OF_DICE - 2 || t[i + 1] != t[i + 2])
+			&& (i == 0 || t[i - 1] != t[i]))
+			dc++;
 	}
 
 	return dc;
