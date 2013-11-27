@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <time.h>
 
 #define BUF_SIZE 1024
 #define PI 3.1415926535897932384626433832795028841971693993751058
@@ -18,6 +19,7 @@ double sin_IE1(double);
 double cos_IE1(double);
 double tan_IE1(double);
 double exp_IE1(double);
+double q_exp_IE1(double);
 double sqrt_IE1(double);
 double ln_IE1(double);
 double pow_IE1(double, double);
@@ -49,8 +51,51 @@ int main(int argc, char *argv[])
 	int i;
 	double x, v[MATH_LAST];
 	char buf[BUF_SIZE];
-	m_func funcs[MATH_LAST] = { sin_IE1, cos_IE1, tan_IE1, exp_IE1, sqrt_IE1, ln_IE1,
+	m_func funcs[MATH_LAST] = { sin_IE1, cos_IE1, tan_IE1, q_exp_IE1, sqrt_IE1, ln_IE1,
 								sin,     cos,     tan,     exp,     sqrt,     log};
+	
+	clock_t st, ie, q, ma;
+	double deg[720];
+	for(i = 0 ; i < 360 ; i++)
+	{
+		deg[360 + i]     = i * P_PI() / 180.0;
+		deg[360 - i - 1] = -deg[360 + 1];
+	}
+
+#define TURNS 0x1000000
+
+//	st = clock();
+//
+//	for(i = 0 ; i < TURNS ; i++)
+//	{
+//		x = exp_IE1(deg[i % 720]);
+//		if(i%(TURNS/100)==0)printf("%d%%\n",i/(TURNS/100));
+//	}
+
+	ie = clock();
+
+	for(i = 0 ; i < TURNS ; i++)
+	{
+		x = q_exp_IE1(deg[i % 720]);
+		if(i%(TURNS/100)==0)printf("%d%%\n",i/(TURNS/100));
+	}
+
+	q = clock();
+
+	for(i = 0 ; i < TURNS ; i++)
+	{
+		x = exp(deg[i % 720]);
+		if(i%(TURNS/100)==0)printf("%d%%\n",i/(TURNS/100));
+	}
+
+	ma = clock();
+
+	printf(" IE1: %lf\nqIE1: %lf\nmath: %lf\n", NAN,
+//			(ie-st)/(double)CLOCKS_PER_SEC, 
+			( q-ie)/(double)CLOCKS_PER_SEC,
+			(ma- q)/(double)CLOCKS_PER_SEC);
+
+	return EXIT_SUCCESS;
 
 	while(1)
 	{	
@@ -192,6 +237,32 @@ double exp_IE1(double x)
 //	printf("#[%d turns!]\n", i);
 
 	return (double) e;
+}
+
+double q_exp_IE1(double x)
+{
+	int i, inv = 0;
+	double e = 1.0, tmp;
+
+	if(x == 0.0) return 1.0;
+
+	if(x < 0)
+	{
+		inv = 1;
+		x = -x;
+	}
+
+	i = 1;
+	tmp = 1.0;
+	do
+	{
+		tmp *= x / i++;
+		e += tmp;
+	} while(e + tmp != e);
+
+	if(inv) { e = 1.0 / e; }
+
+	return e;
 }
 
 double tan_IE1(double x) { return sin_IE1(x) / sin_IE1(x + 0.5 * P_PI()); }
