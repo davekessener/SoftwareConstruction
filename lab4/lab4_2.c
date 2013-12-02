@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #define N 5
 
@@ -30,7 +31,11 @@ int main(int argc, char *argv[])
 		memset(*m_2D, 0, N * N * sizeof(int));
 	}
 
-	return 0;
+#ifndef UNIX
+	system("pause>NUL");
+#endif
+
+	return EXIT_SUCCESS;
 }
 
 void set_4_elems(int matrix_2D[N][N], int index)
@@ -70,7 +75,7 @@ void printM(int a[N][N])
 	{
 		for(j = 0 ; j < N ; j++)
 		{
-			buf[i * (N + 1) + j] = a[i][j] + '0';
+			buf[i * (N + 1) + j] = a[i][j] ? '1' : '0'; // same as "a[i][j] + '0';", really.
 		}
 
 		buf[i * (N + 1) + N] = '\n';

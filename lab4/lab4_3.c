@@ -26,39 +26,50 @@ int main(int argc, char *argv[])
 	printf("=========================================\n");
 	print_final_list(field, &elements);
 
+#ifndef UNIX
+	system("pause>NUL");
+#endif
+
 	return EXIT_SUCCESS;
 }
 
 void multiple_entry_remover(int array[], int *p2_num_elems)
 {
-	int i, j;
-	int n = *p2_num_elems;
-	int *tmp = malloc(n * sizeof(int));
+	int *p1, *p2, *e = (int *) array + *p2_num_elems;
 
 	// sort the array, that way the function only has
 	// to compare each (potential) new element against
 	// the previous one, instead of all previously
 	// accepted elements.
-	qsort(array, n, sizeof(int), cmp);
+	qsort(array, *p2_num_elems, sizeof(int), cmp);
 
-	for(i = 0, j = 0 ; i < n ; i++)
+	// start with both pointers at index 0
+	p1 = p2 = (int *) array;
+
+	do
 	{
-		// if the solution array is empty or the new
-		// value has not been added to the solution, add it
-		if(j == 0 || tmp[j - 1] != array[i])
-		{
-			tmp[j++] = array[i];
-		}
-	}
+		// advance p2 at least once until it points to the first
+		// element that differs from p1 or it supercedes the end
+		// of the array
+		while(*++p2 == *p1 && p2 < e);
 
-	// transfer set of individual integers
-	memcpy(array, tmp, j * sizeof(int));
-	// set empty space to '-1'
-	memset(array + j, -1, (n - j) * sizeof(int));
-	free(tmp);
+		// if p2 is out of bounds (only duplicate elements left
+		// between p1 and e), break
+		if(p2 == e) break;
+
+		// if the are elements between p1 and p2 (the have been
+		// multiple elements in the array at some point), copy
+		// the element at p2 to p1
+		if(++p1 < p2) *p1 = *p2;
+	} while(p2 < e); // repeat until eoa is reached
+
+	// if p1 does not point to the end of the array there have
+	// been multiple elements and the remainder of the array
+	// has to be set to -1
+	if(++p1 < e) memset(p1, -1, (e - p1) * sizeof(int));
 
 	// update element-counter
-	*p2_num_elems = j;
+	*p2_num_elems = p1 - (int *) array;
 }
 
 // but why am i supposed to pass the array-size

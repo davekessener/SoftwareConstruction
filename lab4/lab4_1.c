@@ -29,13 +29,17 @@ int main(int argc, char *argv[])
 	clear_MSBs(dest_array, array_indices);
 
 	printf(	"Modified array:\n\t('*' == modified)\n"
-			"Index | Value | Value(binary)\n------+-------+----------\n");
+			"Index | Value | Value(binary)\n------+-------+---------------\n");
 
 	for(i = 0 ; i < N ; i++)
 	{
 		printf(" %c%02d  |  %.3d  | %.*s\n", isin(i, array_indices, M) ? '*' : ' ', 
 			i, dest_array[i], BYTE_SIZE, printbin(dest_array[i], printbuf));
 	}
+
+#ifndef UNIX
+	system("pause>NUL");
+#endif
 
 	return EXIT_SUCCESS;
 }
@@ -49,13 +53,10 @@ void clear_MSBs(unsigned char dst[], unsigned char ind[])
 		{
 			RSTMSB(dst[ind[i]]);
 		}
-		else
-		{
-			break;
-		}
 	}
 }
 
+// Prints an char in binary representation to a char buffer.
 const char *printbin(uint8_t v, char *buf)
 {
 	int i;
