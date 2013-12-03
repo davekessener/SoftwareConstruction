@@ -7,8 +7,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+// I deem it beneficial to use the optimized qsort routine
+// of the standard library for sorting purposes
+#define STD_SORT
+
+#ifdef STD_SORT
 // comparison function for quicksort ('qsort' in stdlib)
 int cmp(const void *p1, const void *p2) { return *((const int *) p1) > *((const int *) p2); }
+#else
+// sorting function for the array
+void sort_arr(int *, int);
+#endif
 
 void multiple_entry_remover(int[], int *);
 void print_final_list(int[], int *);
@@ -41,36 +50,63 @@ void multiple_entry_remover(int array[], int *p2_num_elems)
 	// to compare each (potential) new element against
 	// the previous one, instead of all previously
 	// accepted elements.
+#ifdef STD_SORT
 	qsort(array, *p2_num_elems, sizeof(int), cmp);
+#else
+	sort_arr(array, *p2_num_elems);
+#endif
 
 	// start with both pointers at index 0
 	p1 = p2 = (int *) array;
 
-	do
+	while(p2 < e)
 	{
 		// advance p2 at least once until it points to the first
 		// element that differs from p1 or it supercedes the end
 		// of the array
 		while(*++p2 == *p1 && p2 < e);
 
-		// if p2 is out of bounds (only duplicate elements left
-		// between p1 and e), break
-		if(p2 == e) break;
+		// if p2 is not out of bounds and there are elements between
+		// p1 and p2 (there have been multiple elements in the array
+		// at some point), copy the element at p2 to p1
+		if(p2 < e && ++p1 < p2) *p1 = *p2;
 
-		// if the are elements between p1 and p2 (the have been
-		// multiple elements in the array at some point), copy
-		// the element at p2 to p1
-		if(++p1 < p2) *p1 = *p2;
-	} while(p2 < e); // repeat until eoa is reached
+		// repeat until p2 is out of bounds (only duplicate elements
+		// are left between p1 and e)
+	}
 
 	// if p1 does not point to the end of the array there have
 	// been multiple elements and the remainder of the array
 	// has to be set to -1
-	if(++p1 < e) memset(p1, -1, (e - p1) * sizeof(int));
+	// since (int)-1 == 0xffffffff, we can use memset to set
+	// all four bytes of every int to (char)-1 == 0xff to archieve
+	// the same result.
+	if(++p1 < e) memset(p1, -1, (e - p1) * sizeof(int)); 
+	//// non-little endian alternative
+	// while(++p1 < e) *p1 = -1;
 
 	// update element-counter
 	*p2_num_elems = p1 - (int *) array;
 }
+
+#ifndef STD_SORT
+#define _SWP(t,a,b) { t __v = a; a = b; b = __v; }
+void sort_arr(int *a, int n)
+{
+	int i, j;
+	for(i = 0 ; i < n ; i++)
+	{
+		for(j = i + 1 ; j < n ; j++)
+		{
+			if(a[j] < a[i])
+			{
+				_SWP(int, a[j], a[i]);
+			}
+		}
+	}
+}
+#undef _SWP
+#endif
 
 // but why am i supposed to pass the array-size
 // as an int pointer instead of just an int?
@@ -79,9 +115,9 @@ void print_final_list(int a[], int *ps)
 	int i, s = *ps;
 	for(i = 0 ; i < s ; i++)
 	{
-		printf("%d", a[i]);
-		if(i < s - 1) printf(", ");
-		else printf(" [%d]\n", s);
+		printf("%c%d%s", i ? '\0' : '{', a[i], i < s - 1 ? ", " : "} ");
 	}
+
+	printf("[%d]\n", s);
 }
 
