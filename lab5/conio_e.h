@@ -1,3 +1,5 @@
+#ifdef UNIX
+
 #ifndef __CONIO_E_H
 #define __CONIO_E_H
 
@@ -12,5 +14,6 @@ void prepare_terminal();
 int kbhit();
 int getch();
 
+#endif
 #endif
 

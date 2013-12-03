@@ -1,3 +1,7 @@
+/* Solution for Assignment 2 of Lab 5 in Software Construction
+ * File: lab5_2.c
+ * Daniel Kessener, HAW 2159858
+ */
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,7 +23,9 @@
 void display(char [] [HEIGHT_OF_ONE_DIE] [WIDTH_OF_DICE], int []);
 int check_for_triplets(int *);
 int check_for_doubles(int *);
+// comparison function for qsort
 int cmp(const void *i1, const void *i2) { return *((const int *) i1) > *((const int *) i2); }
+// returns pointer to dice charmaps (to keep main clean)
 char (*dice())[HEIGHT_OF_ONE_DIE][WIDTH_OF_DICE];
 
 int main(int argc, char *argv[])
@@ -54,11 +60,16 @@ int main(int argc, char *argv[])
 		for(i = 0 ; i < 100 ; i++)
 		{
 #ifndef UNIX
+			// windows 'sleep' takes time in milliseconds
+			// run 100 times 10 ms -> run 1 second
 			sleep(10);
 #else
+			// posix 'usleep' takes time in microseconds
+			// run 100 times 10000 ys -> run 1 second
 			usleep(10000);
 #endif
 
+			// check if user wants to quit ~100 times a second
 			if(kbhit())
 			{
 				c = getchar();
@@ -80,6 +91,8 @@ void display(char d[][HEIGHT_OF_ONE_DIE][WIDTH_OF_DICE], int *t)
 	{
 		for(j = 0 ; j < NUMBER_OF_DICE ; j++)
 		{
+			// iterate over the top slices of the correct
+			// dice first
 			printf("%s%s", d[t[j]][i], j == NUMBER_OF_DICE - 1 ? "\n\r" : " ");
 		}
 	}
@@ -91,6 +104,8 @@ int check_for_doubles(int *t)
 	int i;
 	for(i = 0 ; i < NUMBER_OF_DICE - 1 ; i++)
 	{
+		// if @i equals @(i+1) and not @(i-1) and @(i+2) [-> no triples]
+		// there is a double;
 		if(t[i] == t[i + 1] 
 			&& (i == NUMBER_OF_DICE - 2 || t[i + 1] != t[i + 2])
 			&& (i == 0 || t[i - 1] != t[i]))
@@ -106,6 +121,8 @@ int check_for_triplets(int *t)
 	int i;
 	for(i = 0 ; i < NUMBER_OF_DICE - 2 ; i++)
 	{
+		// if @i equals @(i+1) and !(i+2) [quadruples are not accounted for]
+		// there is a triplet.
 		if(t[i] == t[i + 1] && t[i + 1] == t[i + 2]) { tc++; i += 2; }
 	}
 

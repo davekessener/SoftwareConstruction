@@ -1,3 +1,4 @@
+#ifdef UNIX
 #include "conio_e.h"
 
 struct termios *orig_termios()
@@ -41,4 +42,6 @@ int getch()
 
 	return ((r = read(0, &c, sizeof(c))) < 0) ? r : c;
 }
+
+#endif
 

@@ -1,3 +1,7 @@
+/* Solution for Assignment 1.3 of Lab 5 in Software Construction
+ * File: lab5_1c.c
+ * Daniel Kessener, HAW 2159858
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
