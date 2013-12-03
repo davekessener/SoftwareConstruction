@@ -90,17 +90,18 @@ void multiple_entry_remover(int array[], int *p2_num_elems)
 }
 
 #ifndef STD_SORT
-#define _SWP(t,a,b) { t __v = a; a = b; b = __v; }
 void sort_arr(int *a, int n)
 {
-	int i, j;
+	int i, j, t;
 	for(i = 0 ; i < n ; i++)
 	{
 		for(j = i + 1 ; j < n ; j++)
 		{
 			if(a[j] < a[i])
 			{
-				_SWP(int, a[j], a[i]);
+				t = a[j];
+				a[j] = a[i];
+				a[i] = t;
 			}
 		}
 	}
