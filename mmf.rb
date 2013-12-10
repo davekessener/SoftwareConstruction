@@ -141,8 +141,8 @@ class Node
 		objs.uniq!
 
 		head += "all: #{all.join(' ')}\n\n#{exec}\n#{obj}\n"
-		head += "clean:\n\trm -f #{objs.join(' ')}\n\n"
-		head += "remove: clean\n\trm -f #{all.join(' ')}\n\n"
+		head += "clean:\n\t-rm #{objs.join(' ')}\n\n"
+		head += "remove: clean\n\t-rm #{all.join(' ')}\n\n"
 
 		puts head.gsub(/ +/, ' ')
 	end
