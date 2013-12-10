@@ -1,5 +1,6 @@
 #include <stdio.h> 
 #include <stdlib.h>  
+#include <string.h>
 
 //------------------- prototypes ----------------------------- 
 double* allocate_mem_on_heap_for_vector_1D(int N);
@@ -91,36 +92,33 @@ void free_mem_on_heap_for_matrix_2D(double **m, int n)
 
 void copy_vector_1D_from_stack_to_heap(double p2vector_1D_on_stack[], double p2vector_1D_on_heap[], int n)
 {
-	while(n-- > 0)
-	{
-		p2vector_1D_on_heap[n] = p2vector_1D_on_stack[n];
-	}
+	memcpy(p2vector_1D_on_heap, p2vector_1D_on_stack, n * sizeof(double));
 }
 
 void copy_vector_1D_from_heap_to_stack(double vector_1D_on_heap[], double vector_1D_on_stack[], int n)
 {
-	copy_vector_1D_from_stack_to_heap(vector_1D_on_stack, vector_1D_on_heap, n);
+	memcpy(vector_1D_on_stack, vector_1D_on_heap, n * sizeof(double));
 }
 
 double * vector_1D_add(double *p2A, double *p2B, int n)
 {
-	double *v = malloc(n * sizeof(double));
+	double *r = malloc(n * sizeof(double)), *v = r;
 
-	while(n-- > 0)
+	while(n--)
 	{
-		v[n] = p2A[n] + p2B[n];
+		*v++ = *p2A++ + *p2B++;
 	}
 
-	return v;
+	return r;
 }
 
 double dot_product(double *p2A, double *p2B, int n)
 {
 	double a = 0.0;
 
-	while(n-- > 0)
+	while(n--)
 	{
-		a += p2A[n] * p2B[n];
+		a += *p2A++ * *p2B++;
 	}
 
 	return a;
@@ -146,13 +144,11 @@ double ** column_vector_1D_times_row_vector_1D(double *p2A, double *p2B, int n)
 
 void print_vector_1D(double *p2_vec, int n)
 {
-	int i;
-	
 	printf("{");
 
-	for(i = 0 ; i < n ; i++)
+	while(n--)
 	{
-		printf("%lg%s", p2_vec[i], i < n - 1 ? ", " : "}");
+		printf("%lg%s", *p2_vec++, n ? ", " : "}");
 	}
 }
 
