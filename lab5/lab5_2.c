@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #ifndef UNIX
 #include <conio.h>
@@ -38,6 +39,8 @@ int main(int argc, char *argv[])
 #ifdef UNIX
 	prepare_terminal();
 #endif
+
+	srand(time(NULL));
 	
 	while(1)
 	{
