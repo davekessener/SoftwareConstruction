@@ -104,10 +104,7 @@ double * vector_1D_add(double *p2A, double *p2B, int n)
 {
 	double *r = malloc(n * sizeof(double)), *v = r;
 
-	while(n--)
-	{
-		*v++ = *p2A++ + *p2B++;
-	}
+	while(n--) *v++=*p2A+++*p2B++;
 
 	return r;
 }
@@ -116,10 +113,7 @@ double dot_product(double *p2A, double *p2B, int n)
 {
 	double a = 0.0;
 
-	while(n--)
-	{
-		a += *p2A++ * *p2B++;
-	}
+	while(n--) a+=*p2A++**p2B++;
 
 	return a;
 }
@@ -154,12 +148,13 @@ void print_vector_1D(double *p2_vec, int n)
 
 void print_matrix_2D(double **p2p2_matrix, int n)
 {
-	int i;
-	for(i = 0 ; i < n ; i++)
+	int i = n;
+
+	while(i)
 	{
-		printf("%c", i ? ' ' : '{');
-		print_vector_1D(p2p2_matrix[i], n);
-		printf("%c\n", i == n - 1 ? '}' : ',');
+		printf("%c", i == n ? '{' : ' ');
+		print_vector_1D(*p2p2_matrix++, n);
+		printf("%c\n", --i ? ',' : '}');
 	}
 }
 
