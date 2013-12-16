@@ -47,18 +47,21 @@ int main(int argc, char *argv[])
 		t = (uint32_t) rand();
 		for(i = 0 ; i < NUMBER_OF_DICE ; i++)
 		{
+			// extract three dice-values from the random number
 			throws[i] = t % POSSIBLE_DICE_VALUES;
 			t /= POSSIBLE_DICE_VALUES;
 		}
 
+		// display dice before sorting
 		display(dice(), throws);
 
+		// sort the dice by value in ascending order
 		qsort(throws, NUMBER_OF_DICE, sizeof(int), cmp);
 
 		triplets += check_for_triplets(throws);
 		doubles += check_for_doubles(throws);
 
-		printf("==> %d doubles && %d triples.\n\n\r", doubles, triplets);
+		printf("==> %d doubles && %d triples.\n\r[Press any key to quit.]\n\n\r", doubles, triplets);
 
 		for(i = 0 ; i < 100 ; i++)
 		{
