@@ -8,8 +8,9 @@ do
 		make remove
 		rm makefile
 		cd ..
-		rm -f "$dir.zip"
+		rm -f "zips/$dir.zip"
 		zip -r9 "$dir.zip" "$dir/"
+		mv "$dir.zip" zips/
 	fi
 done
 
