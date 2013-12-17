@@ -9,7 +9,7 @@ do
 		rm makefile
 		cd ..
 		rm -f "zips/$dir.zip"
-		zip -r9 "$dir.zip" "$dir/"
+		zip -r9 "$dir.zip" "$dir/" > /dev/null
 		mv "$dir.zip" zips/
 	fi
 done
