@@ -5,7 +5,7 @@ do
 	if [ -d "$dir" ]; then
 		cd "$dir"
 		../mmf.rb > makefile
-		make remove
+		make remove > /dev/null
 		rm makefile
 		cd ..
 		rm -f "zips/$dir.zip"
