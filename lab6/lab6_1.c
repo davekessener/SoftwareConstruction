@@ -34,6 +34,10 @@ int main(int argc, char *argv[])
 
 	free(m);
 
+#ifndef UNIX
+	system("pause>NUL");
+#endif
+
 	return EXIT_SUCCESS;
 }
 

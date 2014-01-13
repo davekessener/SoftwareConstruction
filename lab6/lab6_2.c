@@ -62,6 +62,10 @@ int main(int argc, char *argv[])
 	free_mem_on_heap_for_vector_1D(p2B_on_heap);
 	free_mem_on_heap_for_matrix_2D(p2_matrix2D_on_heap, elements);
 
+#ifndef UNIX
+	system("pause>NUL");
+#endif
+
 	return EXIT_SUCCESS;
 } // end of main  
 
