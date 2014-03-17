@@ -5,17 +5,18 @@ import java.util.Map;
 
 public class Morse
 {
-	private static final Map<Integer, Character> lookup;
-	private static final Map<Character, Integer> rLookup;
-	private final char value;
-	private final int dec;
+	public static final char MORSE_CHARACTERS[] = new char[] {'_', '.', '-'};
+	private static final Map<Integer, Character> lookup; // lookup-tables: decimal <-> char
+	private static final Map<Character, Integer> rLookup;//                char    <-> decimal
+	private final char value; // representation of morse-character as ascii-char
+	private final int dec; // decimal representation
 	
 	public Morse(char v) throws MorseException
 	{
-		if(v >= 'A' && v <= 'Z') v -= 'A' - 'a';
-		if(v < 'a' || v > 'z')
+		if(v >= 'A' && v <= 'Z') v -= 'A' - 'a'; // convert from upper- to lowercase
+		if(v < 'a' || v > 'z') // if the user passed a non-alpha character
 		{
-			throw new MorseException(String.format("ERR: Invalid character '%s'"));
+			throw new MorseException(String.format("ERR: Invalid character '%c'", v));
 		}
 		
 		value = v;
@@ -24,12 +25,37 @@ public class Morse
 	
 	public Morse(String s) throws MorseException
 	{
-		value = (s.charAt(0) >= '0' && s.charAt(0) <= '2') ? doLookup(Integer.parseInt(s)) : fromString(s);
+		s = s.replaceAll("[^0-9\\.\\-_]+", ""); // clean string from all non-morsecode characters
+		
+		// the passed string may either be a morse-code in the form of '..-_'
+		// or an integer equal to the characters decimal or terzial representation
+		if(s.charAt(0) >= '0' && s.charAt(0) <= '9')
+		{
+			try
+			{
+				// try to extract the integer
+				int v = Integer.parseInt(s);
+				value = doLookup(v < 1000 ? convert(v, 3, 10) : v);
+			}
+			catch (NumberFormatException e)
+			{
+				// an invalid string has been passed.
+				throw new MorseException(String.format("ERR: Numerical string actually isn't one: '%s'", s));
+			}
+		}
+		else
+		{
+			// reconstruct character from morse-code
+			value = fromString(s);
+		}
+
 		dec = doReverseLookup(value);
 	}
 	
 	public Morse(int i) throws MorseException
 	{
+		// in its decimal representation all morse-characters are larger than
+		// 1000, so if 'i' is smaller than 1000 it is assumed to be the characters terzial representation
 		value = doLookup(i < 1000 ? convert(i, 3, 10) : i);
 		dec = doReverseLookup(value);
 	}
@@ -37,16 +63,15 @@ public class Morse
 	public char getCharacter( ) { return value; }
 	public int getDecimal( ) { return dec; }
 	public int getTerzial( ) { return convert(dec, 10, 3); }
-	public String getMorse( )
+	public String getMorse( ) // reconstruct the morse-code representation of the character
 	{
-		char cs[] = new char[] {'_', '.', '-'};
 		int v = dec;
 		
 		String s = "";
 		
 		for(int i = 0 ; i < 4 ; ++i)
 		{
-			s = cs[v % 10] + s;
+			s = MORSE_CHARACTERS[v % 10] + s;
 			v /= 10;
 		}
 		
@@ -81,49 +106,53 @@ public class Morse
 	public static Morse fromTerzial(int i) throws MorseException { return new Morse(i); }
 	public static Morse fromCode(String s) throws MorseException { return new Morse(s); }
 	
-	private static int convert(int i, int tb, int sb)
+	private static int convert(int i, int tb, int sb) // converts an integer from base 10 to base 'tb'
+	// `([0-sb]+)`(10) -> (`\1`(tb))(10)
 	{
 		int r = 0;
 		int c = 1;
 		
 		while(i > 0)
 		{
-			r += c * (i % tb);
+			r += c * (i % sb);
 
-			i /= tb;
-			c *= 10;
+			i /= sb;
+			c *= tb;
 		}
 		
 		return r;
 	}
 	
-	private static char fromString(String s) throws MorseException 
+	private static char fromString(String s) throws MorseException
+	// converts a morse-code to it's character equivalent
 	{
 		char p[] = s.toCharArray();
 		int v = 0;
-		
+	
+		// iterate over every character
 		for(char c : p)
 		{
-			switch(c)
+			for(int i = 0 ; i < MORSE_CHARACTERS.length ; ++i)
 			{
-			case ' ':
-			case '_':
-				v = 10 * v + 0;
-				break;
-			case '.':
-				v = 10 * v + 1;
-				break;
-			case '-':
-				v = 10 * v + 2;
-				break;
-			default:
-				throw new MorseException(String.format("ERR: Unknown character '%c' encountered!", c));
+				if(c == MORSE_CHARACTERS[i])
+				{
+					// add character value ('_' =^= 0, '.' =^= 1, '-' =^= 2)
+					v = 10 * v + i;
+					break;
+				}
+
+				// if the current character is not a morse-code character, throw an exception
+				if(i == MORSE_CHARACTERS.length - 1)
+				{
+					throw new MorseException(String.format("ERR: Unknown character '%c' encountered!", c));
+				}
 			}
 		}
 		
 		return doLookup(v);
 	}
 	
+	// lookup character-representation from decimal representation
 	private static char doLookup(int v) throws MorseException 
 	{
 		if(!lookup.containsKey(v))
@@ -134,6 +163,7 @@ public class Morse
 		return lookup.get(v);
 	}
 	
+	// lookup decimal representation from character representation
 	private static int doReverseLookup(char c) throws MorseException 
 	{
 		if(!rLookup.containsKey(c))
@@ -144,6 +174,7 @@ public class Morse
 		return rLookup.get(c);
 	}
 	
+	// insert new character/integer relation into lookup-tables
 	private static void insert(char c, int i) throws MorseException 
 	{
 		if(lookup.containsKey(i) || rLookup.containsKey(c))
@@ -159,7 +190,8 @@ public class Morse
 	{
 		lookup = new HashMap<Integer, Character>();
 		rLookup = new HashMap<Character, Integer>();
-		
+	
+		// adds all valid ascii-characters to the lookup-tables
 		try
 		{
 			insert('b', 2111);

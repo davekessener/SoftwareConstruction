@@ -31,8 +31,8 @@ public class MorseTest implements Testable
 	{
 			char c[] = input.toCharArray();
 			
-			log.log("  Morsecode  |  fromCode  | fromDecimal | fromTerzial ");
-			log.log("-------------+------------+-------------+--------------");
+			log.log("  Morsecode  |   Decimal  |   Terzial  |  fromCode  | fromDecimal | fromTerzial ");
+			log.log("-------------+------------+------------+------------+-------------+--------------");
 			
 			for(char t : c)
 			{
@@ -40,7 +40,8 @@ public class MorseTest implements Testable
 				{
 					Morse m = new Morse(t);
 				
-					log.log("    %s     |    '%c'     |    '%c'      |    '%c'", m.getMorse(), 
+					log.log("    %s     |    %d     |     %d     |    '%c'     |    '%c'      |    '%c'", 
+							m.getMorse(), m.getDecimal(), m.getTerzial(),
 						Morse.fromCode(m.getMorse()).getCharacter(),
 						Morse.fromDecimal(m.getDecimal()).getCharacter(),
 						Morse.fromTerzial(m.getTerzial()).getCharacter());

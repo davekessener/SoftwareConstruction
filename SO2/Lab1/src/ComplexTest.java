@@ -11,9 +11,13 @@ import testing.Testable;
 
 public class ComplexTest implements Testable
 {
+	// how often a number is converted between polar and cartesian
 	private static final int CONVERSION_COUNT = 1024;
+	// how many numbers should be tested
 	private static final int TEST_CASES = 4096;
+	// maximum size of cartesian parts
 	private static final int MAX_LENGTH = 128;
+	// how many digits accuracy should be checked gainst
 	private static final int COMP_DIGITS = 8;
 	
 	@Override
@@ -21,13 +25,15 @@ public class ComplexTest implements Testable
 			throws TestException
 	{
 		Random r = new Random(System.currentTimeMillis());
-			
+		
 		if(name.equalsIgnoreCase(SINGLE_NUMBER))
 		{
+			// check a single random complex number
 			return checkNumber(r.nextDouble() * r.nextInt(MAX_LENGTH), r.nextDouble() * r.nextInt(MAX_LENGTH), log);
 		}
 		else if(name.equalsIgnoreCase(MANY_NUMBERS))
 		{
+			// check many random complex numbers
 			return checkMany(r, log);
 		}
 		else
