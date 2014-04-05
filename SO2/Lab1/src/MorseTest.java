@@ -38,11 +38,11 @@ public class MorseTest implements Testable
 			{
 				try
 				{
-					Morse m = new Morse(t);
+					Morse m = Morse.fromCharacter(t);
 				
 					log.log("    %s     |    %d     |     %d     |    '%c'     |    '%c'      |    '%c'", 
-							m.getMorse(), m.getDecimal(), m.getTerzial(),
-						Morse.fromCode(m.getMorse()).getCharacter(),
+							m.getMorseCode(), m.getDecimal(), m.getTerzial(),
+						Morse.fromCode(m.getMorseCode()).getCharacter(),
 						Morse.fromDecimal(m.getDecimal()).getCharacter(),
 						Morse.fromTerzial(m.getTerzial()).getCharacter());
 				}
@@ -74,7 +74,7 @@ public class MorseTest implements Testable
 					
 					for(char c : cs)
 					{
-						o += String.format("%s  ", Morse.fromCharacter(c).getMorse());
+						o += String.format("%s  ", Morse.fromCharacter(c).getMorseCode());
 					}
 				
 					log.log(o);
