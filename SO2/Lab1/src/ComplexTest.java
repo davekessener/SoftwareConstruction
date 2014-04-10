@@ -12,9 +12,9 @@ import testing.Testable;
 public class ComplexTest implements Testable
 {
 	// how often a number is converted between polar and cartesian
-	private static final int CONVERSION_COUNT = 1024;
+	private static final int CONVERSION_COUNT = 512;
 	// how many numbers should be tested
-	private static final int TEST_CASES = 4096;
+	private static final int TEST_CASES = 1024;
 	// maximum size of cartesian parts
 	private static final int MAX_LENGTH = 128;
 	// how many digits accuracy should be checked gainst
@@ -34,7 +34,7 @@ public class ComplexTest implements Testable
 		else if(name.equalsIgnoreCase(MANY_NUMBERS))
 		{
 			// check many random complex numbers
-			return checkMany(r, log);
+			return checkMany(r, log, 20);
 		}
 		else
 		{
@@ -42,7 +42,7 @@ public class ComplexTest implements Testable
 		}
 	}
 	
-	private boolean checkMany(Random r, Logger log) { return checkMany(r, log, 100); }
+//	private boolean checkMany(Random r, Logger log) { return checkMany(r, log, 100); }
 	private boolean checkMany(Random r, Logger log, int steps)
 	{
 		double _r, _i;
@@ -67,7 +67,7 @@ public class ComplexTest implements Testable
 			}
 		}
 		
-		log.log("Successfully ran %d tests.", TEST_CASES);
+		log.log("Successfully ran %d tests, complex numbers for %d digits accurate.", TEST_CASES, COMP_DIGITS);
 		
 		return true;
 	}

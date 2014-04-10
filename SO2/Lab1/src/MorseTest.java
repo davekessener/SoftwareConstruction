@@ -1,3 +1,8 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 import morsecode.Morse;
 import morsecode.MorseException;
 import testing.Logger;
@@ -11,15 +16,15 @@ public class MorseTest implements Testable
 	{
 		if(name.equalsIgnoreCase(TEST_ONE_WORD))
 		{
-			singleWord(input, log);
-			
-			return true;
+			return singleWord(input, log);
 		}
 		else if(name.equalsIgnoreCase(TEST_ONE_SENTENCE))
 		{
-			singleSentence(input, log);
-			
-			return true;
+			return singleSentence(input, log);
+		}
+		else if(name.equalsIgnoreCase(TEST_FILE))
+		{
+			return testFile(input, log);
 		}
 		else
 		{
@@ -27,7 +32,43 @@ public class MorseTest implements Testable
 		}
 	}
 	
-	private void singleWord(String input, Logger log) throws TestException
+	private boolean testFile(String input, Logger log) throws TestException
+	{
+		BufferedReader r = null;
+		String txt = "";
+		
+		try
+		{
+			r = new BufferedReader(new FileReader(input));
+		}
+		catch(FileNotFoundException e)
+		{
+			throw new TestException(e);
+		}
+		
+		try
+		{
+			String p;
+			
+			while((p = r.readLine()) != null)
+			{
+				txt += p;
+				log.log("%s", p);
+			}
+			
+			log.log("\n");
+		
+			r.close();
+		}
+		catch(IOException e)
+		{
+			throw new TestException(e);
+		}
+			
+		return singleSentence(txt, log);
+	}
+	
+	private boolean singleWord(String input, Logger log) throws TestException
 	{
 			char c[] = input.toCharArray();
 			
@@ -40,7 +81,7 @@ public class MorseTest implements Testable
 				{
 					Morse m = Morse.fromCharacter(t);
 				
-					log.log("    %s     |    %d     |     %d     |    '%c'     |    '%c'      |    '%c'", 
+					log.log("    %s     |    %d    |     %d     |    '%c'     |    '%c'      |    '%c'", 
 							m.getMorseCode(), m.getDecimal(), m.getTerzial(),
 						Morse.fromCode(m.getMorseCode()).getCharacter(),
 						Morse.fromDecimal(m.getDecimal()).getCharacter(),
@@ -51,9 +92,11 @@ public class MorseTest implements Testable
 					throw new TestException(e);
 				}
 			}
+			
+			return true;
 	}
 	
-	private void singleSentence(String input, Logger log) throws TestException
+	private boolean singleSentence(String input, Logger log) throws TestException
 	{
 			String ss[] = input.replaceAll("[^ \t.,!?a-zA-Z]", "").split("[ \t!?.,]+");
 			int ml = 0;
@@ -84,12 +127,14 @@ public class MorseTest implements Testable
 					throw new TestException(e);
 				}
 			}
+			
+			return true;
 	}
 
 	@Override
 	public String[] getTestNames()
 	{
-		return new String[] {TEST_ONE_WORD, TEST_ONE_SENTENCE};
+		return new String[] {TEST_ONE_WORD, TEST_ONE_SENTENCE, TEST_FILE};
 	}
 
 	@Override
@@ -106,4 +151,5 @@ public class MorseTest implements Testable
 	
 	private static final String TEST_ONE_WORD = "a single word";
 	private static final String TEST_ONE_SENTENCE = "a single sentence";
+	private static final String TEST_FILE = "a file";
 }

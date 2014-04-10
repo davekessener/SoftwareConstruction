@@ -152,7 +152,7 @@ public class Morse
 		throw new MorseException("ERR: '" + c + "' is not a valid morsecode.");
 	}
 	
-	private static int convert(int i, int tb, int sb) // converts an integer from base 10 to base 'tb'
+	private static int convert(int i, int sb, int tb) // converts an integer from base 10 to base 'tb'
 	// `([0-sb]+)`(10) -> (`\1`(tb))(10)
 	{
 		int r = 0;
@@ -160,10 +160,9 @@ public class Morse
 		
 		while(i > 0)
 		{
-			r += c * (i % sb);
-
-			i /= sb;
+			r += (i % sb) * c;
 			c *= tb;
+			i /= sb;
 		}
 		
 		return r;
