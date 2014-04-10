@@ -8,13 +8,12 @@ public class Morse
 	public static final char MORSE_CHARACTERS[] = new char[] {'_', '.', '-'};
 	private static final Map<Integer, Character> lookup;
 	private static final Map<Character, Integer> rLookup;
-	private static final Map<Character, Morse> alphabet;
 	private final char value; // representation of morse-character as ascii-char
 	private final int dec; // decimal representation
 	private final int terz; // terzial representation
 	private final String code; // morse-code representation
 	
-	private Morse(char v) throws MorseException
+	public Morse(char v) throws MorseException
 	{
 		if(v >= 'A' && v <= 'Z') v -= 'A' - 'a'; // convert from upper- to lowercase
 		if(v < 'a' || v > 'z') // if the user passed a non-alpha character
@@ -28,7 +27,7 @@ public class Morse
 		code = getMorseCode(dec);
 	}
 	
-	private Morse(String s) throws MorseException
+	public Morse(String s) throws MorseException
 	{
 		s = s.replaceAll("[^0-9\\.\\-_]+", ""); // clean string from all non-morsecode characters
 		
@@ -59,7 +58,7 @@ public class Morse
 		code = getMorseCode(dec);
 	}
 	
-	private Morse(int i) throws MorseException
+	public Morse(int i) throws MorseException
 	{
 		// in its decimal representation all morse-characters are larger than
 		// 1000, so if 'i' is smaller than 1000 it is assumed to be the characters terzial representation
@@ -107,50 +106,13 @@ public class Morse
 	@Override
 	public String toString( )
 	{
-		return String.format("Morse{'%c', \"%s\"}", value, getMorseCode());
+		return String.format("Morse{'%c', \"%s\", %d, %d}", value, getMorseCode(), this.dec, this.terz);
 	}
 	
-	public static Morse fromCharacter(char c) throws MorseException
-	{
-		if(c >= 'A' && c <= 'Z') c -= 'A' - 'a';
-		
-		if(!alphabet.containsKey(c))
-		{
-			throw new MorseException(String.format("ERR: No character '%c' in morse alphabet.", c));
-		}
-		
-		return alphabet.get(c);
-	}
-	
-	public static Morse fromDecimal(int d) throws MorseException
-	{
-		for(Morse m : alphabet.values())
-		{
-			if(m.dec == d) return m;
-		}
-		
-		throw new MorseException(String.format("ERR: No '%d' in morse alphabet.", d));
-	}
-	
-	public static Morse fromTerzial(int t) throws MorseException
-	{
-		for(Morse m : alphabet.values())
-		{
-			if(m.terz == t) return m;
-		}
-		
-		throw new MorseException(String.format("ERR: No '%d' in morse alphabet.", t));
-	}
-	
-	public static Morse fromCode(String c) throws MorseException
-	{
-		for(Morse m : alphabet.values())
-		{
-			if(m.code.equalsIgnoreCase(c)) return m;
-		}
-		
-		throw new MorseException("ERR: '" + c + "' is not a valid morsecode.");
-	}
+	public static Morse fromCharacter(char c) throws MorseException { return new Morse(c); }
+	public static Morse fromDecimal(int d) throws MorseException { return new Morse(d); }
+	public static Morse fromTerzial(int t) throws MorseException { return new Morse(t); }
+	public static Morse fromCode(String c) throws MorseException { return new Morse(c); }
 	
 	private static int convert(int i, int sb, int tb) // converts an integer from base 10 to base 'tb'
 	// `([0-sb]+)`(10) -> (`\1`(tb))(10)
@@ -233,7 +195,6 @@ public class Morse
 	
 	static
 	{
-		alphabet = new HashMap<Character, Morse>();
 		lookup = new HashMap<Integer, Character>();
 		rLookup = new HashMap<Character, Integer>();
 	
@@ -272,22 +233,5 @@ public class Morse
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
-		try
-		{
-			for(char c : rLookup.keySet())
-			{
-				alphabet.put(c, new Morse(c)); // setup alphabet-lookup
-			}
-		}
-		catch(MorseException e)
-		{
-			e.printStackTrace();
-			System.exit(1);
-		}
-		
-		// free memory
-		lookup.clear();
-		rLookup.clear();
 	}
 }

@@ -37,13 +37,16 @@ public class MorseTest implements Testable
 		BufferedReader r = null;
 		String txt = "";
 		
+		if(input.equalsIgnoreCase("")) return false;
+		
 		try
 		{
 			r = new BufferedReader(new FileReader(input));
 		}
 		catch(FileNotFoundException e)
 		{
-			throw new TestException(e);
+			e.printStackTrace();
+			return false;
 		}
 		
 		try
@@ -79,7 +82,7 @@ public class MorseTest implements Testable
 			{
 				try
 				{
-					Morse m = Morse.fromCharacter(t);
+					Morse m = new Morse(t);
 				
 					log.log("    %s     |    %d    |     %d     |    '%c'     |    '%c'      |    '%c'", 
 							m.getMorseCode(), m.getDecimal(), m.getTerzial(),
@@ -117,7 +120,7 @@ public class MorseTest implements Testable
 					
 					for(char c : cs)
 					{
-						o += String.format("%s  ", Morse.fromCharacter(c).getMorseCode());
+						o += String.format("%s  ", (new Morse(c)).getMorseCode());
 					}
 				
 					log.log(o);

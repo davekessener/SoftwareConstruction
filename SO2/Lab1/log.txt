@@ -144,41 +144,33 @@ a file $> morsetest.txt
 # Testing 'SO2 - Lab1: Complex numbers' in auto random mode
 =============================================================
 ### Attempting test 'a single number':
-	Check number real=52.860484, imaginary=0.364751
-	c.real      = 52.860484
-	c.imaginary = 0.364751
-	c.magnitude = 52.861743
-	c.angle     = 0.395350 (0.002196 pi)
+	Check number real=12,918060, imaginary=15,091004
+	c.real      = 12,918060
+	c.imaginary = 15,091004
+	c.magnitude = 19,864910
+	c.angle     = 49,436123 (0,274645 pi)
 	------------------------------------
 	After 512 of 512 conversions:
-	c.real      = 52.860484
-	c.imaginary = 0.364751
-	c.magnitude = 52.861743
-	c.angle     = 0.395350 (0.002196 pi)
+	c.real      = 12,918060
+	c.imaginary = 15,091004
+	c.magnitude = 19,864910
+	c.angle     = 49,436123 (0,274645 pi)
 ### Success!
-### Attempting test 'many numbers':
-	[...] running 0 / 1024 (0%)
-	[...] running 51 / 1024 (4%)
-	[...] running 102 / 1024 (9%)
-	[...] running 153 / 1024 (14%)
-	[...] running 204 / 1024 (19%)
-	[...] running 255 / 1024 (24%)
-	[...] running 306 / 1024 (29%)
-	[...] running 357 / 1024 (34%)
-	[...] running 408 / 1024 (39%)
-	[...] running 459 / 1024 (44%)
-	[...] running 510 / 1024 (49%)
-	[...] running 561 / 1024 (54%)
-	[...] running 612 / 1024 (59%)
-	[...] running 663 / 1024 (64%)
-	[...] running 714 / 1024 (69%)
-	[...] running 765 / 1024 (74%)
-	[...] running 816 / 1024 (79%)
-	[...] running 867 / 1024 (84%)
-	[...] running 918 / 1024 (89%)
-	[...] running 969 / 1024 (94%)
-	[...] running 1020 / 1024 (99%)
-	Successfully ran 1024 tests, complex numbers for 8 digits accurate.
+### Attempting test 'operators':
+	>> Testing for int - int
+	(39 + j9) + (19 + j44) == 59 + j54
+	(18 + j1) - (28 + j8) == -9 - j7
+	(35 < 0°) * (41 < 0°) == 1497 < 57°
+	(97 < 0°) / (86 < 0°) == 1 < 286°
+	>> Testing for double - int
+	(13.97 + j45.67) + (71 + j59) == 85.15 + j105.57
+	(4.24 + j0.43) - (99 + j0) == -95.36 - j0.04
+	(59.53 < 7.65°) * (2 < 57°) == 159.01 < 83.15°
+	(94.32 < 79.91°) / (53 < 0°) == 1.77 < 46.73°
+	>> Testing for double - double
+	(96.24 + j16.91) + (51.31 + j112.05) == 147.54 + j128.96
+	(6.47 + j58.67) - (102.03 + j43.98) == -95.56 + j14.69
+	(25.00 < 10.75°) * (57.28 < 77.41°) == 1432.00 < 88.16°
+	(74.49 < 82.34°) / (49.57 < 86.58°) == 1.50 < 355.76°
 ### Success!
 [DONE]
-

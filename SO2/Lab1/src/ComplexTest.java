@@ -36,10 +36,94 @@ public class ComplexTest implements Testable
 			// check many random complex numbers
 			return checkMany(r, log, 20);
 		}
+		else if(name.equalsIgnoreCase(OPERATORS))
+		{
+			// check the operators +,-,* and /
+			return checkOperators(log, r);
+		}
 		else
 		{
 			return false;
 		}
+	}
+
+	private Complex getRandomComplex(Random r) { return getRandomComplex(r, false); }
+	private Complex getRandomComplex(Random r, boolean i)
+	{
+		return new Complex(
+				new Complex.Cartesian(
+						r.nextDouble() * r.nextInt(MAX_LENGTH), 
+						r.nextDouble() * r.nextInt(MAX_LENGTH)), i);
+	}
+	
+	private boolean checkOperators(Logger log, Random r)
+	{
+		Complex c1, c2;
+
+		log.log(">> Testing for int - int");
+		log.log("(%s) + (%s) == %s", 
+				(c1 = getRandomComplex(r, true)).cartesianString(), 
+				(c2 = getRandomComplex(r, true)).cartesianString(), 
+				c1.add(c2).cartesianString());
+
+		log.log("(%s) - (%s) == %s", 
+				(c1 = getRandomComplex(r, true)).cartesianString(), 
+				(c2 = getRandomComplex(r, true)).cartesianString(), 
+				c1.sub(c2).cartesianString());
+
+		log.log("(%s) * (%s) == %s", 
+				(c1 = getRandomComplex(r, true)).polarString(), 
+				(c2 = getRandomComplex(r, true)).polarString(), 
+				c1.mul(c2).polarString());
+
+		log.log("(%s) / (%s) == %s", 
+				(c1 = getRandomComplex(r, true)).polarString(), 
+				(c2 = getRandomComplex(r, true)).polarString(), 
+				c1.div(c2).polarString());
+
+		log.log(">> Testing for double - int");
+		log.log("(%s) + (%s) == %s", 
+				(c1 = getRandomComplex(r)).cartesianString(), 
+				(c2 = getRandomComplex(r, true)).cartesianString(), 
+				c1.add(c2).cartesianString());
+
+		log.log("(%s) - (%s) == %s", 
+				(c1 = getRandomComplex(r)).cartesianString(), 
+				(c2 = getRandomComplex(r, true)).cartesianString(), 
+				c1.sub(c2).cartesianString());
+
+		log.log("(%s) * (%s) == %s", 
+				(c1 = getRandomComplex(r)).polarString(), 
+				(c2 = getRandomComplex(r, true)).polarString(), 
+				c1.mul(c2).polarString());
+
+		log.log("(%s) / (%s) == %s", 
+				(c1 = getRandomComplex(r)).polarString(), 
+				(c2 = getRandomComplex(r, true)).polarString(), 
+				c1.div(c2).polarString());
+
+		log.log(">> Testing for double - double");
+		log.log("(%s) + (%s) == %s", 
+				(c1 = getRandomComplex(r)).cartesianString(), 
+				(c2 = getRandomComplex(r)).cartesianString(), 
+				c1.add(c2).cartesianString());
+
+		log.log("(%s) - (%s) == %s", 
+				(c1 = getRandomComplex(r)).cartesianString(), 
+				(c2 = getRandomComplex(r)).cartesianString(), 
+				c1.sub(c2).cartesianString());
+
+		log.log("(%s) * (%s) == %s", 
+				(c1 = getRandomComplex(r)).polarString(), 
+				(c2 = getRandomComplex(r)).polarString(), 
+				c1.mul(c2).polarString());
+
+		log.log("(%s) / (%s) == %s", 
+				(c1 = getRandomComplex(r)).polarString(), 
+				(c2 = getRandomComplex(r)).polarString(), 
+				c1.div(c2).polarString());
+
+		return true;
 	}
 	
 //	private boolean checkMany(Random r, Logger log) { return checkMany(r, log, 100); }
@@ -118,7 +202,7 @@ public class ComplexTest implements Testable
 	@Override
 	public String[] getTestNames()
 	{
-		return new String[] {SINGLE_NUMBER, MANY_NUMBERS};
+		return new String[] {SINGLE_NUMBER, OPERATORS};
 	}
 
 	@Override
@@ -133,5 +217,7 @@ public class ComplexTest implements Testable
 		return "auto random";
 	}
 
-	public static String SINGLE_NUMBER = "a single number", MANY_NUMBERS = "many numbers";
+	public static final String SINGLE_NUMBER = "a single number";
+	public static final String MANY_NUMBERS = "many numbers";
+	public static final String OPERATORS = "operators";
 }
