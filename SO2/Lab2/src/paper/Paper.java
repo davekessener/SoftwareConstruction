@@ -2,9 +2,10 @@ package paper;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Paper
 {
@@ -14,6 +15,10 @@ public class Paper
 	private String type;
 	private String[] content;
 	private int[] wpL;
+	
+	protected Paper( )
+	{
+	}
 	
 	public Paper(String title, float price, String type, String[] content)
 	{
@@ -59,31 +64,41 @@ public class Paper
 		return ws[c];
 	}
 	
+	public void writeToFile(String fn) throws IOException
+	{
+		writeToFile(new BufferedWriter(new FileWriter(fn)));
+	}
+	
+	public static Paper constructFromFile(String fn)
+	{
+		try
+		{
+			return constructFromFile(new BufferedReader(new FileReader(fn)));
+		}
+		catch(FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 	public void writeToFile(BufferedWriter bw) throws IOException
 	{
 		bw.write(toString());
 	}
 	
-	public static Paper readFromFile(BufferedReader br)
+	public static Paper constructFromFile(BufferedReader br)
 	{
 		try
 		{
-			String title = br.readLine();
-			float price = Float.parseFloat(br.readLine());
-			String type = br.readLine();
-			int l = Integer.parseInt(br.readLine());
-			List<String> c = new ArrayList<String>();
-			
-			for(int i = 0 ; i < l ; ++i)
-			{
-				c.add(br.readLine());
-			}
-			
-			String[] content = c.toArray(new String[l]);
-			
-			return new Paper(title, price, type, content);
+			Paper p = new Paper();
+		
+			p.readFromFile(br);
+		
+			return p;
 		}
-		catch(NumberFormatException e)
+		catch(IllegalArgumentException e)
 		{
 			e.printStackTrace();
 		}
@@ -93,6 +108,37 @@ public class Paper
 		}
 		
 		return null;
+	}
+	
+	public void readFromFile(String fn) throws FileNotFoundException, IOException
+	{
+		readFromFile(new BufferedReader(new FileReader(fn)));
+	}
+	
+	public void readFromFile(BufferedReader br) throws IOException
+	{
+		try
+		{
+			title = br.readLine();
+			price = Float.parseFloat(br.readLine());
+			type = br.readLine();
+			factor = searchTypeFactor(type);
+			int l = Integer.parseInt(br.readLine());
+			content = new String[l];
+			wpL = new int[l];
+			
+			for(int i = 0 ; i < l ; ++i)
+			{
+				String line = br.readLine();
+
+				content[i] = line;
+				wpL[i] = getWordPerLine(line);
+			}
+		}
+		catch(NumberFormatException e)
+		{
+			throw new IllegalArgumentException(e.getMessage());
+		}
 	}
 	
 	@Override
