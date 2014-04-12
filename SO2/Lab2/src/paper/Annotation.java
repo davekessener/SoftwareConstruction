@@ -76,6 +76,10 @@ public class Annotation extends Paper
 		
 			return a;
 		}
+		catch(IllegalArgumentException e)
+		{
+			e.printStackTrace();
+		}
 		catch(IOException e)
 		{
 			e.printStackTrace();
@@ -94,6 +98,7 @@ public class Annotation extends Paper
 			br.readLine();
 		
 			int l = Integer.parseInt(br.readLine());
+			annotations = new HashMap<Integer, String>(l);
 			
 			while(l-- > 0)
 			{

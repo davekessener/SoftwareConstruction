@@ -134,6 +134,8 @@ public class Paper
 				content[i] = line;
 				wpL[i] = getWordPerLine(line);
 			}
+			
+			br.readLine();
 		}
 		catch(NumberFormatException e)
 		{
@@ -176,4 +178,16 @@ public class Paper
 	public String getTitle( ) { return title; }
 	public float getPrice( ) { return price; }
 	public int getCostFactor( ) { return factor; }
+	public String getPaperType( ) { return type; }
+	public String[] getContent( )
+	{
+		String[] r = new String[content.length];
+		
+		for(int i = 0 ; i < content.length ; ++i)
+		{
+			r[i] = content[i];
+		}
+		
+		return r;
+	}
 }
