@@ -2,7 +2,7 @@ package paper;
 
 public interface Papertype
 {
-	enum PAPERTYPE
+	public enum PAPERTYPE
 	{
 		BELLESLETTERS(1),
 		SCIENTIFIC(2),

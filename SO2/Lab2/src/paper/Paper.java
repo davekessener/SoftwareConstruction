@@ -20,6 +20,7 @@ public class Paper
 	{
 	}
 	
+	public Paper(String n, float p, Papertype.PAPERTYPE t, String[] c) { this(n, p, t.name(), c); }
 	public Paper(String title, float price, String type, String[] content)
 	{
 		this.title = title;
@@ -66,21 +67,29 @@ public class Paper
 	
 	public void writeToFile(String fn) throws IOException
 	{
-		writeToFile(new BufferedWriter(new FileWriter(fn)));
+		BufferedWriter bw = new BufferedWriter(new FileWriter(fn));
+		writeToFile(bw);
+		bw.close();
 	}
 	
 	public static Paper constructFromFile(String fn)
 	{
+		Paper p = null;
+		
 		try
 		{
-			return constructFromFile(new BufferedReader(new FileReader(fn)));
+			BufferedReader br = new BufferedReader(new FileReader(fn));
+			
+			p = constructFromFile(br);
+			
+			br.close();
 		}
-		catch(FileNotFoundException e)
+		catch(IOException e)
 		{
 			e.printStackTrace();
 		}
 		
-		return null;
+		return p;
 	}
 	
 	public void writeToFile(BufferedWriter bw) throws IOException
@@ -112,7 +121,11 @@ public class Paper
 	
 	public void readFromFile(String fn) throws FileNotFoundException, IOException
 	{
-		readFromFile(new BufferedReader(new FileReader(fn)));
+		BufferedReader br = new BufferedReader(new FileReader(fn));
+		
+		readFromFile(br);
+		
+		br.close();
 	}
 	
 	public void readFromFile(BufferedReader br) throws IOException

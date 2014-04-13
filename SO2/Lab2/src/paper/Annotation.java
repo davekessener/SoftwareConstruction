@@ -2,6 +2,7 @@ package paper;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,8 +13,10 @@ public class Annotation extends Paper
 	
 	protected Annotation( )
 	{
+		annotations = new HashMap<Integer, String>();
 	}
 	
+	public Annotation(String n, float p, Papertype.PAPERTYPE t, String[] c) { this(n, p, t.name(), c); }
 	public Annotation(String title, float price, String type, String[] content)
 	{
 		super(title, price, type, content);
@@ -66,6 +69,26 @@ public class Annotation extends Paper
 		bw.write(toString());
 	}
 	
+	public static Annotation constructFromFile(String fn)
+	{
+		Annotation a = null;
+		
+		try
+		{
+			BufferedReader br = new BufferedReader(new FileReader(fn));
+			
+			a = constructFromFile(br);
+			
+			br.close();
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+		
+		return a;
+	}
+	
 	public static Annotation constructFromFile(BufferedReader br)
 	{
 		try
@@ -98,7 +121,8 @@ public class Annotation extends Paper
 			br.readLine();
 		
 			int l = Integer.parseInt(br.readLine());
-			annotations = new HashMap<Integer, String>(l);
+
+			annotations.clear();
 			
 			while(l-- > 0)
 			{

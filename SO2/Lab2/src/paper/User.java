@@ -18,13 +18,14 @@ public class User
 	
 	protected User( )
 	{
+		this.myPapers = new ArrayList<Paper>();
+		this.myAnnotations = new ArrayList<Annotation>();
 	}
 	
 	public User(String name)
 	{
+		this();
 		this.name = name;
-		this.myPapers = new ArrayList<Paper>();
-		this.myAnnotations = new ArrayList<Annotation>();
 		this.total = 0F;
 	}
 	
@@ -58,6 +59,18 @@ public class User
 		{
 			myPapers.add(p);
 			total += p.getPrice() * p.getCostFactor();
+		}
+	}
+	
+	public void addAnnotation(String fn)
+	{
+		Annotation a = Annotation.constructFromFile(fn);
+		
+		if(a != null)
+		{
+			myAnnotations.add(a);
+			
+			total += a.getPrice() * a.getCostFactor();
 		}
 	}
 	
@@ -128,16 +141,25 @@ public class User
 			name = br.readLine();
 			br.readLine();
 			
+			myPapers.clear();
+			myAnnotations.clear();
+			
+			total = 0F;
+			
 			int pc = Integer.parseInt(br.readLine());
 			while(pc-- > 0)
 			{
-				myPapers.add(Paper.constructFromFile(br));
+				Paper p = Paper.constructFromFile(br);
+				myPapers.add(p);
+				total += p.getPrice() * p.getCostFactor();
 			}
 			
 			int ac = Integer.parseInt(br.readLine());
 			while(ac-- > 0)
 			{
-				myAnnotations.add(Annotation.constructFromFile(br));
+				Annotation a = Annotation.constructFromFile(br);
+				myAnnotations.add(a);
+				total += a.getPrice() * a.getCostFactor();
 			}
 		}
 		catch(NumberFormatException e)
