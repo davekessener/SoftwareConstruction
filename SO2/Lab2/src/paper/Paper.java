@@ -2,10 +2,14 @@ package paper;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+
+import paper.exception.PaperInvalidColumnException;
+import paper.exception.PaperInvalidRowException;
+import paper.exception.PaperReadWriteException;
+import paper.exception.PaperWordNotFoundException;
 
 public class Paper
 {
@@ -33,11 +37,11 @@ public class Paper
 		for(int i = 0 ; i < content.length ; ++i)
 		{
 			this.content[i] = content[i];
-			this.wpL[i] = getWordPerLine(content[i]);
+			this.wpL[i] = getWordsPerLine(content[i]);
 		}
 	}
 	
-	public int[] searchWord(String w)
+	public int[] searchWord(String w) throws PaperWordNotFoundException
 	{
 		w = w.replaceAll("[^0-9a-zA-Z]+", "");
 		
@@ -51,84 +55,90 @@ public class Paper
 			}
 		}
 		
-		return null;
+		throw new PaperWordNotFoundException(this, w);
 	}
 	
-	public String getWord(int c, int r)
+	public String getWord(int c, int r) throws PaperInvalidRowException, PaperInvalidColumnException
 	{
-		if(r < 0 || r >= content.length) return null;
+		if(r < 0 || r >= content.length) throw new PaperInvalidRowException(this, r);
 		
 		String ws[] = content[r].split("[^0-9a-zA-Z]+");
 		
-		if(c < 0 || c >= ws.length) return null;
+		if(c < 0 || c >= ws.length) throw new PaperInvalidColumnException(this, r, c);
 		
 		return ws[c];
 	}
 	
-	public void writeToFile(String fn) throws IOException
+	public void writeToFile(String fn) throws PaperReadWriteException
 	{
-		BufferedWriter bw = new BufferedWriter(new FileWriter(fn));
-		writeToFile(bw);
-		bw.close();
+		try
+		{
+			BufferedWriter bw = new BufferedWriter(new FileWriter(fn));
+			writeToFile(bw);
+			bw.close();
+		}
+		catch(IOException e)
+		{
+			throw new PaperReadWriteException(this, e);
+		}
 	}
 	
-	public static Paper constructFromFile(String fn)
+	public static Paper constructFromFile(String fn) throws PaperReadWriteException
 	{
-		Paper p = null;
-		
 		try
 		{
 			BufferedReader br = new BufferedReader(new FileReader(fn));
 			
-			p = constructFromFile(br);
+			Paper p = constructFromFile(br);
 			
 			br.close();
+		
+			return p;
 		}
 		catch(IOException e)
 		{
-			e.printStackTrace();
+			throw new PaperReadWriteException(null, e);
 		}
+	}
+	
+	public void writeToFile(BufferedWriter bw) throws PaperReadWriteException
+	{
+		try
+		{
+			bw.write(toString());
+		}
+		catch(IOException e)
+		{
+			throw new PaperReadWriteException(this, e);
+		}
+	}
+	
+	public static Paper constructFromFile(BufferedReader br) throws PaperReadWriteException
+	{
+		Paper p = new Paper();
+		
+		p.readFromFile(br);
 		
 		return p;
 	}
 	
-	public void writeToFile(BufferedWriter bw) throws IOException
-	{
-		bw.write(toString());
-	}
-	
-	public static Paper constructFromFile(BufferedReader br)
+	public void readFromFile(String fn) throws PaperReadWriteException
 	{
 		try
 		{
-			Paper p = new Paper();
+			BufferedReader br = new BufferedReader(new FileReader(fn));
 		
-			p.readFromFile(br);
+			readFromFile(br);
 		
-			return p;
-		}
-		catch(IllegalArgumentException e)
-		{
-			e.printStackTrace();
+			br.close();
 		}
 		catch(IOException e)
 		{
-			e.printStackTrace();
+			throw new PaperReadWriteException(this, e);
 		}
-		
-		return null;
 	}
 	
-	public void readFromFile(String fn) throws FileNotFoundException, IOException
-	{
-		BufferedReader br = new BufferedReader(new FileReader(fn));
-		
-		readFromFile(br);
-		
-		br.close();
-	}
-	
-	public void readFromFile(BufferedReader br) throws IOException
+	public void readFromFile(BufferedReader br) throws PaperReadWriteException
 	{
 		try
 		{
@@ -145,14 +155,18 @@ public class Paper
 				String line = br.readLine();
 
 				content[i] = line;
-				wpL[i] = getWordPerLine(line);
+				wpL[i] = getWordsPerLine(line);
 			}
 			
 			br.readLine();
 		}
 		catch(NumberFormatException e)
 		{
-			throw new IllegalArgumentException(e.getMessage());
+			throw new PaperReadWriteException(this, e);
+		}
+		catch(IOException e)
+		{
+			throw new PaperReadWriteException(this, e);
 		}
 	}
 	
@@ -176,7 +190,7 @@ public class Paper
 		return s.toString();
 	}
 
-	protected static int getWordPerLine(String line)
+	protected static int getWordsPerLine(String line)
 	{
 		return line.split("[^0-9a-zA-Z]+").length;
 	}
@@ -202,5 +216,13 @@ public class Paper
 		}
 		
 		return r;
+	}
+	
+	public int getRowCount() { return content.length; }
+	public int getWordCount(int r) throws PaperInvalidRowException
+	{
+		if(r < 0 || r >= content.length) throw new PaperInvalidRowException(this, r);
+		
+		return getWordsPerLine(content[r]);
 	}
 }

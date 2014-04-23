@@ -7,6 +7,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import paper.exception.PaperInvalidColumnException;
+import paper.exception.PaperInvalidRowException;
+import paper.exception.PaperReadWriteException;
+import paper.exception.PaperWordNotFoundException;
+
 public class Annotation extends Paper
 {
 	private Map<Integer, String> annotations;
@@ -24,27 +29,29 @@ public class Annotation extends Paper
 		annotations = new HashMap<Integer, String>();
 	}
 	
-	public void addAnnotation(String w, String a)
+	public void addAnnotation(String w, String a) throws PaperWordNotFoundException, PaperInvalidRowException, PaperInvalidColumnException
 	{
 		int[] xy = super.searchWord(w);
 		
 		addAnnotation(xy[0], xy[1], a);
 	}
 	
-	public String showAnnotation(String w)
+	public String showAnnotation(String w) throws PaperWordNotFoundException, PaperInvalidColumnException, PaperInvalidRowException
 	{
 		int[] xy = super.searchWord(w);
 		
 		return showAnnotation(xy[0], xy[1]);
 	}
 	
-	public void addAnnotation(int c, int r, String a)
+	public void addAnnotation(int c, int r, String a) throws PaperInvalidRowException, PaperInvalidColumnException
 	{
+		if(c < 0 || c >= getWordCount(r)) throw new PaperInvalidColumnException(this, r, c);
 		annotations.put(toKey(r, c), a);
 	}
 	
-	public String showAnnotation(int c, int r)
+	public String showAnnotation(int c, int r) throws PaperInvalidColumnException, PaperInvalidRowException
 	{
+		if(c < 0 || c >= getWordCount(r)) throw new PaperInvalidColumnException(this, r, c);
 		return annotations.get(toKey(r, c));
 	}
 	
@@ -64,12 +71,19 @@ public class Annotation extends Paper
 	}
 	
 	@Override
-	public void writeToFile(BufferedWriter bw) throws IOException
+	public void writeToFile(BufferedWriter bw) throws PaperReadWriteException
 	{
-		bw.write(toString());
+		try
+		{
+			bw.write(toString());
+		}
+		catch(IOException e)
+		{
+			throw new PaperReadWriteException(this, e);
+		}
 	}
 	
-	public static Annotation constructFromFile(String fn)
+	public static Annotation constructFromFile(String fn) throws PaperReadWriteException
 	{
 		Annotation a = null;
 		
@@ -83,36 +97,23 @@ public class Annotation extends Paper
 		}
 		catch(IOException e)
 		{
-			e.printStackTrace();
+			throw new PaperReadWriteException(null, e);
 		}
 		
 		return a;
 	}
 	
-	public static Annotation constructFromFile(BufferedReader br)
+	public static Annotation constructFromFile(BufferedReader br) throws PaperReadWriteException
 	{
-		try
-		{
-			Annotation a = new Annotation();
+		Annotation a = new Annotation();
 		
-			a.readFromFile(br);
+		a.readFromFile(br);
 		
-			return a;
-		}
-		catch(IllegalArgumentException e)
-		{
-			e.printStackTrace();
-		}
-		catch(IOException e)
-		{
-			e.printStackTrace();
-		}
-		
-		return null;
+		return a;
 	}
 	
 	@Override
-	public void readFromFile(BufferedReader br) throws IOException
+	public void readFromFile(BufferedReader br) throws PaperReadWriteException
 	{
 		try
 		{
@@ -134,9 +135,13 @@ public class Annotation extends Paper
 				annotations.put(p, a);
 			}
 		}
+		catch(IOException e)
+		{
+			throw new PaperReadWriteException(this, e);
+		}
 		catch(NumberFormatException e)
 		{
-			throw new IllegalArgumentException(e.getMessage());
+			throw new PaperReadWriteException(this, e);
 		}
 	}
 	

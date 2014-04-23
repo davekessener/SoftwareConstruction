@@ -2,12 +2,13 @@ package paper;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import paper.exception.PaperReadWriteException;
 
 public class User
 {
@@ -51,7 +52,7 @@ public class User
 		return s.toString();
 	}
 	
-	public void addPaper(String fn)
+	public void addPaper(String fn) throws PaperReadWriteException
 	{
 		Paper p = Paper.constructFromFile(fn);
 		
@@ -62,7 +63,7 @@ public class User
 		}
 	}
 	
-	public void addAnnotation(String fn)
+	public void addAnnotation(String fn) throws PaperReadWriteException
 	{
 		Annotation a = Annotation.constructFromFile(fn);
 		
@@ -97,44 +98,26 @@ public class User
 		bw.write(toString());
 	}
 	
-	public static User constructFromFile(String fn)
+	public static User constructFromFile(String fn) throws PaperReadWriteException, IOException
 	{
-		try
-		{
-			return constructFromFile(new BufferedReader(new FileReader(fn)));
-		}
-		catch(FileNotFoundException e)
-		{
-			e.printStackTrace();
-		}
-		
-		return null;
+		return constructFromFile(new BufferedReader(new FileReader(fn)));
 	}
 	
-	public static User constructFromFile(BufferedReader br)
+	public static User constructFromFile(BufferedReader br) throws PaperReadWriteException, IOException
 	{
-		try
-		{
-			User u = new User();
-			
-			u.readFromFile(br);
-			
-			return u;
-		}
-		catch(IOException e)
-		{
-			e.printStackTrace();
-		}
+		User u = new User();
 		
-		return null;
+		u.readFromFile(br);
+			
+		return u;
 	}
 	
-	public void readFromFile(String fn) throws IOException
+	public void readFromFile(String fn) throws IOException, PaperReadWriteException
 	{
 		readFromFile(new BufferedReader(new FileReader(fn)));
 	}
 	
-	public void readFromFile(BufferedReader br) throws IOException
+	public void readFromFile(BufferedReader br) throws IOException, PaperReadWriteException
 	{
 		try
 		{
