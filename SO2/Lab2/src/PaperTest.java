@@ -7,6 +7,7 @@ import java.util.Random;
 
 import paper.Paper;
 import paper.Papertype;
+import paper.exception.PaperReadWriteException;
 
 import testing.Logger;
 import testing.TestException;
@@ -58,6 +59,10 @@ public class PaperTest implements Testable
 			log.decIndent();
 			
 			return true;
+		}
+		catch(PaperReadWriteException e)
+		{
+			e.printStackTrace();
 		}
 		catch(IOException e)
 		{

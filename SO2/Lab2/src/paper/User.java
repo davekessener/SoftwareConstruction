@@ -40,13 +40,13 @@ public class User
 		s.append(myPapers.size());
 		for(Paper p : myPapers)
 		{
-			s.append(p.toString());
+			s.append('\n').append(p.toString());
 		}
 		
-		s.append(myAnnotations.size());
+		s.append('\n').append(myAnnotations.size());
 		for(Annotation a : myAnnotations)
 		{
-			s.append(a.toString());
+			s.append('\n').append(a.toString());
 		}
 		
 		return s.toString();
