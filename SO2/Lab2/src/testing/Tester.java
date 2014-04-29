@@ -1,7 +1,9 @@
 package testing;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import testing.exception.TestException;
@@ -35,6 +37,7 @@ public abstract class Tester implements IStorage
 		register(new CToString());
 		register(new CSelect());
 		register(new CName());
+		register(new CList());
 		register(makeCmd);
 	}
 	
@@ -123,6 +126,19 @@ public abstract class Tester implements IStorage
 		return hasObject(name) ? objects.get(name) : null;
 	}
 	
+	@Override
+	public String[] getObjectList()
+	{
+		List<String> r = new ArrayList<String>(objects.size());
+		
+		for(String n : objects.keySet())
+		{
+			r.add(n);
+		}
+		
+		return r.toArray(new String[r.size()]);
+	}
+	
 	public static final String UNKNOWN = "?";
 	public static final String PROMPT = "$'%s'> ";
 	public static final String NIL = "nil";
@@ -131,6 +147,7 @@ public abstract class Tester implements IStorage
 	public static final String CMD_TOSTRING = "toString";
 	public static final String CMD_SELECT = "select";
 	public static final String CMD_NAME = "name";
+	public static final String CMD_LIST = "list";
 	
 	private static class CQuit implements ICallable
 	{
@@ -239,5 +256,36 @@ public abstract class Tester implements IStorage
 		
 		private static final String EMPTY = "'Name' field cannot be empty.";
 		private static final String NO_SELECTION = "An unnamed variable has to have been selected.";
+	}
+	
+	private static class CList implements ICallable
+	{
+		@Override
+		public String getCmdName()
+		{
+			return CMD_LIST;
+		}
+		
+		@Override
+		public boolean call(IStorage is, String args)
+		{
+			String[] n = is.getObjectList();
+			int i = 0;
+
+			is.getLog().log(LIST, i++, NIL, "null");
+			
+			for(String name : n)
+			{
+				if(name.equalsIgnoreCase(UNKNOWN)) continue;
+				
+				Variable v = is.getObject(name);
+				
+				is.getLog().log(LIST, i++, v.getReferenceName(), v.getObject().getClass().getSimpleName());
+			}
+
+			return true;
+		}
+		
+		private static final String LIST = "%d: %s(%s)";
 	}
 }

@@ -1,4 +1,8 @@
+import java.io.IOException;
+
 import paper.User;
+import paper.exception.PaperInvalidColumnException;
+import paper.exception.PaperInvalidRowException;
 import paper.exception.PaperReadWriteException;
 import testing.IStorage;
 import testing.Variable;
@@ -30,12 +34,63 @@ public class VariableUser extends Variable
 		{
 			change(is, args);
 		}
+		else if(cn.equalsIgnoreCase(CMD_SAVE))
+		{
+			save(is, args);
+		}
+		else if(cn.equalsIgnoreCase(CMD_ANN))
+		{
+			annotate(is, args);
+		}
 		else
 		{
 			throw new UnknownCommandException(cn);
 		}
 		
 		return true;
+	}
+	
+	private void annotate(IStorage is, String args) throws InvalidArgumentsException
+	{
+		try
+		{
+			String n = args.split(" ")[0];
+			int r = Integer.parseInt(args.split(" ")[1]);
+			int c = Integer.parseInt(args.split(" ")[2]);
+			String a = args.replaceFirst("[^ ]+ [0-9]+ [0-9]+ ?", "");
+			
+			((User) getObject()).annotate(n, r, c, a);
+		}
+		catch(IndexOutOfBoundsException e)
+		{
+			throw new InvalidArgumentsException(this, args);
+		}
+		catch(NumberFormatException e)
+		{
+			e.printStackTrace();
+		}
+		catch(PaperInvalidRowException e)
+		{
+			e.printStackTrace();
+		}
+		catch(PaperInvalidColumnException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	private void save(IStorage is, String fn) throws InvalidArgumentsException
+	{
+		if(fn.isEmpty()) throw new InvalidArgumentsException(this, EMPTY);
+		
+		try
+		{
+			((User) getObject()).writeToFile(fn);
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	private void change(IStorage is, String s) throws InvalidArgumentsException
@@ -76,6 +131,8 @@ public class VariableUser extends Variable
 	private static final String CMD_ADDP = "addpaper";
 	private static final String CMD_ADDA = "addann";
 	private static final String CMD_CHANGE = "changeptoa";
+	private static final String CMD_SAVE = "saveuser";
+	private static final String CMD_ANN = "annotate";
 	
 	private static final String EMPTY = "Need to have specified a name.";
 }

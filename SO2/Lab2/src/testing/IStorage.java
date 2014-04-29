@@ -7,4 +7,5 @@ public interface IStorage
 	public Logger getLog();
 	public boolean hasObject(String name);
 	public Variable getObject(String name);
+	public String[] getObjectList();
 }

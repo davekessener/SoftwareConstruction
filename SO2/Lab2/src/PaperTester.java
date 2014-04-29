@@ -12,6 +12,8 @@ public class PaperTester extends Tester
 	protected void registerCommands()
 	{
 		register(new CommandLoadPaper());
+		register(new CommandLoadUser());
+		register(new CommandFindWord());
 	}
 
 	@Override

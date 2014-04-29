@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import paper.exception.PaperInvalidColumnException;
+import paper.exception.PaperInvalidRowException;
 import paper.exception.PaperReadWriteException;
 
 public class User
@@ -88,9 +90,25 @@ public class User
 		}
 	}
 	
+	public void annotate(String name, int r, int c, String a) throws PaperInvalidRowException, PaperInvalidColumnException
+	{
+		changePaperToAnnotation(name);
+		
+		for(Annotation ann : myAnnotations)
+		{
+			if(ann.getTitle().equals(name))
+			{
+				ann.addAnnotation(c, r, a);
+				break;
+			}
+		}
+	}
+	
 	public void writeToFile(String fn) throws IOException
 	{
-		writeToFile(new BufferedWriter(new FileWriter(fn)));
+		BufferedWriter bw = new BufferedWriter(new FileWriter(fn));
+		writeToFile(bw);
+		bw.close();
 	}
 	
 	public void writeToFile(BufferedWriter bw) throws IOException
@@ -100,7 +118,11 @@ public class User
 	
 	public static User constructFromFile(String fn) throws PaperReadWriteException, IOException
 	{
-		return constructFromFile(new BufferedReader(new FileReader(fn)));
+		BufferedReader br = new BufferedReader(new FileReader(fn));
+		User u = constructFromFile(br);
+		br.close();
+		
+		return u;
 	}
 	
 	public static User constructFromFile(BufferedReader br) throws PaperReadWriteException, IOException
@@ -114,7 +136,9 @@ public class User
 	
 	public void readFromFile(String fn) throws IOException, PaperReadWriteException
 	{
-		readFromFile(new BufferedReader(new FileReader(fn)));
+		BufferedReader br = new BufferedReader(new FileReader(fn));
+		readFromFile(br);
+		br.close();
 	}
 	
 	public void readFromFile(BufferedReader br) throws IOException, PaperReadWriteException
@@ -147,7 +171,7 @@ public class User
 		}
 		catch(NumberFormatException e)
 		{
-			throw new IllegalArgumentException(e.getMessage());
+			throw new PaperReadWriteException(null, e);
 		}
 	}
 	

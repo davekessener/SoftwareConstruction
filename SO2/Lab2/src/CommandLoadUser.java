@@ -1,31 +1,38 @@
-import paper.Paper;
+import java.io.IOException;
+
+import paper.User;
 import paper.exception.PaperReadWriteException;
 import testing.ICallable;
 import testing.IStorage;
 import testing.Tester;
-import testing.Variable;
 import testing.exception.InvalidArgumentsException;
+import testing.exception.UnknownCommandException;
 
-public class CommandLoadPaper implements ICallable
+
+public class CommandLoadUser implements ICallable
 {
 	@Override
 	public String getCmdName()
 	{
-		return CMD_LOADPAPER;
+		return CMD_LOAD;
 	}
 
 	@Override
-	public boolean call(IStorage is, String fn) throws InvalidArgumentsException
+	public boolean call(IStorage is, String fn) throws UnknownCommandException, InvalidArgumentsException
 	{
 		if(fn.isEmpty()) throw new InvalidArgumentsException(this, NEED_FNAME);
 		
 		try
 		{
-			Paper p = Paper.constructFromFile(fn);
+			User u = User.constructFromFile(fn);
 			
-			is.setSelection(new Variable(Tester.UNKNOWN, p));
+			is.setSelection(new VariableUser(Tester.UNKNOWN, u));
 		}
 		catch(PaperReadWriteException e)
+		{
+			e.printStackTrace();
+		}
+		catch(IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -33,6 +40,6 @@ public class CommandLoadPaper implements ICallable
 		return true;
 	}
 
-	public static final String CMD_LOADPAPER = "loadpaper";
+	private static final String CMD_LOAD = "loaduser";
 	private static final String NEED_FNAME = "Cannot omit filename.";
 }

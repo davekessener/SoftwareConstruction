@@ -36,17 +36,26 @@ public class Annotation extends Paper
 		addAnnotation(xy[0], xy[1], a);
 	}
 	
+	public void addAnnotation(int c, int r, String a) throws PaperInvalidRowException, PaperInvalidColumnException
+	{
+		if(c < 0 || c >= getWordCount(r)) throw new PaperInvalidColumnException(this, r, c);
+		int key = toKey(r, c);
+		
+		if(a.isEmpty())
+		{
+			if(annotations.containsKey(key)) annotations.remove(key);
+		}
+		else
+		{
+			annotations.put(key, a);
+		}
+	}
+	
 	public String showAnnotation(String w) throws PaperWordNotFoundException, PaperInvalidColumnException, PaperInvalidRowException
 	{
 		int[] xy = super.searchWord(w);
 		
 		return showAnnotation(xy[0], xy[1]);
-	}
-	
-	public void addAnnotation(int c, int r, String a) throws PaperInvalidRowException, PaperInvalidColumnException
-	{
-		if(c < 0 || c >= getWordCount(r)) throw new PaperInvalidColumnException(this, r, c);
-		annotations.put(toKey(r, c), a);
 	}
 	
 	public String showAnnotation(int c, int r) throws PaperInvalidColumnException, PaperInvalidRowException
@@ -64,7 +73,7 @@ public class Annotation extends Paper
 		
 		for(int p : annotations.keySet())
 		{
-			s.append('\n').append(p).append(' ').append(annotations.equals(p));
+			s.append('\n').append(p).append(' ').append(annotations.get(p));
 		}
 		
 		return s.toString();
@@ -118,8 +127,6 @@ public class Annotation extends Paper
 		try
 		{
 			super.readFromFile(br);
-		
-			br.readLine();
 		
 			int l = Integer.parseInt(br.readLine());
 
