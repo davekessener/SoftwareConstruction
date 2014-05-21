@@ -13,14 +13,14 @@ import paper.exception.PaperWordNotFoundException;
 
 public class Paper
 {
-	private String title;
-	private float price;
-	private int factor;
-	private String type;
-	private String[] content;
-	private int[] wpL;
+	protected String title;
+	protected float price;
+	protected int factor;
+	protected String type;
+	protected String[] content;
+	protected int[] wpL;
 	
-	protected Paper( )
+	public Paper( )
 	{
 	}
 	

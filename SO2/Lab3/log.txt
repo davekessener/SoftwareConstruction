@@ -1,0 +1,40 @@
+Music - Test Log
+Test: class Song
+	Equality: [SUCCESS!]
+	Self-Equality: [SUCCESS!]
+	### Song.toString ###
+	AnotherTitle
+	AnotherComposer
+	AnotherComposer
+	ROCK
+	8
+	9
+	1
+	1
+	2
+	3
+	5
+	8
+	13
+	21
+	34
+	###
+Test: class SongSet
+	Constructor success.
+Test: class Library
+	Constructor success.
+Test: class CD
+	Constructor success!
+	Adding song1 (no exceptions expected) [...]
+	[SUCCESS!]
+	Adding song2 (incompatible type. retry after failure) [...]
+	music.exception.IncompatibleTypeException: Song 'AnotherTitle' is not of type 'CLASSIC'.
+	### Trying again: [...]
+	[SUCCESS!]
+	Adding songset1 (length exceeded. no retry) [...]
+	music.exception.MaxPermissableDurationExceededException: Song 'ASongSet''s addition would exceed the allowed duration of 16 minutes.
+	[SUCCESS!]
+	For testing purposes, cd is resized and songset1 is added anyway.
+	Self-Equality: [SUCCESS!]
+	Read/Write check: [SUCCESS!]
+

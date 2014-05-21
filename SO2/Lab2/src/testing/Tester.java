@@ -14,6 +14,7 @@ public abstract class Tester implements IStorage
 {
 	private Map<String, Variable> objects;
 	private Map<String, ICallable> functions;
+	private List<String> collection;
 	private Variable select;
 	private Input input;
 	private Logger log;
@@ -23,6 +24,7 @@ public abstract class Tester implements IStorage
 	{
 		objects = new HashMap<String, Variable>();
 		functions = new HashMap<String, ICallable>();
+		collection = new ArrayList<String>();
 		select = null;
 		input = in;
 		log = out;
@@ -55,20 +57,36 @@ public abstract class Tester implements IStorage
 				
 				try
 				{
-					if(!execute(cmd)) break;
+					boolean stay = execute(cmd);
+					
+					collection.add(cmd);
+					
+					if(!stay) break;
 				}
 				catch(TestException e)
 				{
 					log.log("%s", e.getMessage());
 				}
 			}
-
-			log.log("goodbye");
+			
+			log.log("%s", collect());
 		}
 		catch(IOException e)
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	protected String collect()
+	{
+		StringBuilder c = new StringBuilder();
+		
+		for(String s : collection)
+		{
+			c.append(s).append('\n');
+		}
+		
+		return c.toString();
 	}
 	
 	protected boolean execute(String cmd) throws UnknownCommandException, InvalidArgumentsException
