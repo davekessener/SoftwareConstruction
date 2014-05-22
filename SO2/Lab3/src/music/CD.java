@@ -43,6 +43,25 @@ public class CD
 			}
 	}
 	
+	public String burnToDisc()
+	{
+		StringBuilder s = new StringBuilder();
+		
+		s.append(name).append('\n');
+		s.append(type.name()).append('\n');
+		s.append(duration).append('/').append(maxLength).append('\n');
+		
+		for(int i = 0 ; i < tc ; ++i)
+		{
+			s.append(tracks[i][0] == 0 ?
+					library.getSongSet(tracks[i][1]).toString() :
+					library.getSong(tracks[i][0]).toString())
+				.append('\n');
+		}
+		
+		return s.toString();
+	}
+	
 	@Override
 	public String toString()
 	{

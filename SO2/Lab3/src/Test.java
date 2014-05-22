@@ -202,6 +202,9 @@ public class Test
 		
 		printf("Self-Equality: %s", cd.equals(cd) ? "[SUCCESS!]" : "[FAILURE!]");
 		printf("Read/Write check: %s", readWrite(cd) ? "[SUCCESS!]" : "[FAILURE!]");
+		print("### CD output:");
+		print(cd.burnToDisc());
+		print("###");
 // [END]
 		
 		return true;
