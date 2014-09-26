@@ -33,13 +33,13 @@ public class Test
 		t1.setPrice(42);
 		t1.setCapacity(200);
 		
-		Toner t2 = new Toner("Canon 2014", "JMarque 4e");
+		Toner t2 = new Toner("Canon 2014", "JMarqueue 4e");
 		t2.addColor("MAGENTA");
 		t2.setPrice(1000);
 		t2.setCapacity(1000);
 		t2.setType(1);
 		
-		Shop s1 = new Shop("Lownly");
+		Shop s1 = new Shop("OLownly");
 		s1.addCartridge(i1);
 		s1.addCartridge(i2);
 		s1.addCartridge(t1);

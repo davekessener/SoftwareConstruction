@@ -20,14 +20,20 @@ public class SongSet extends Song
 	
 	public SongSet(Song[] s)
 	{
-		super(s[0]);
+		type = s[0].type;
 		setOfSongs = new Song[s.length];
 		minutes = 0;
 		content = new byte[0];
+		id = new String[s[0].id.length];
+		
+		for(int i = 0 ; i < s[0].id.length ; ++i)
+		{
+			id[i] = s[0].id[i];
+		}
 		
 		for(int i = 0 ; i < s.length ; ++i)
 		{
-			setOfSongs[i] = new Song(s[i]);
+			setOfSongs[i] = (Song) s[i].clone();
 			minutes += s[i].minutes;
 		}
 	}

@@ -26,10 +26,7 @@ public final class Utils
 		if(r.length == i) return new String(r);
 		
 		byte[] tb = new byte[i];
-		for(int j = 0 ; j < i ; ++j)
-		{
-			tb[j] = r[j];
-		}
+		for(int j = 0 ; j < i ; ++j) tb[j] = r[j];
 		
 		return new String(tb);
 	}
@@ -60,15 +57,9 @@ public final class Utils
 	
 	public static String[] addArr(String[] a, String s)
 	{
-		String[] t = new String[a.length + 1];
-		
-		for(int i = 0 ; i < a.length ; ++i)
-		{
-			t[i] = a[i];
-		}
-		t[a.length] = s;
-		
-		return t;
+		a = copyArr(new String[a.length + 1], a);
+		a[a.length  - 1] = s;
+		return a;
 	}
 	
 	public static <T> String join(T[] t, String d)
@@ -84,6 +75,17 @@ public final class Utils
 		}
 		
 		return s.toString();
+	}
+	
+	public static <T> T[] copyArr(T[] t1, T[] t2) { return copyArr(t1, t2, t1.length < t2.length ? t1.length : t2.length); }
+	public static <T> T[] copyArr(T[] t1, T[] t2, int l)
+	{
+		for(int i = 0 ; i < l ; ++i)
+		{
+			t1[i] = t2[i];
+		}
+		
+		return t1;
 	}
 	
 	private Utils( ) { }

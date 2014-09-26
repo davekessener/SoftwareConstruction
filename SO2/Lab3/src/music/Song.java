@@ -4,10 +4,10 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
-public class Song implements IMusic
+public class Song implements IMusic, Cloneable
 {
-	protected String[] id; // title, composer, interpreter
-	protected int minutes; // length in minutes
+	protected String[] id;
+	protected int minutes;
 	protected byte[] content;
 	protected typeOfMusic type;
 	
@@ -22,7 +22,6 @@ public class Song implements IMusic
 		this.minutes = minutes >= 0 ? minutes : 0;
 		this.type = type;
 		
-		// deep copy of content
 		this.content = new byte[content.length];
 		for(int i = 0 ; i < content.length ; ++i)
 		{
@@ -30,10 +29,23 @@ public class Song implements IMusic
 		}
 	}
 	
-	// copy-constructor
-	public Song(Song s)
+	@Override
+	public Object clone()
 	{
-		this(s.id[TITLE_], s.id[COMPOSER_], s.id[INTERPRET_], s.type, s.minutes, s.content);
+		try
+		{
+			Song s = (Song) super.clone();
+			s.id = id.clone();
+			s.content = content.clone();
+			s.type = type;
+			
+			return s;
+		}
+		catch(CloneNotSupportedException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	@Override

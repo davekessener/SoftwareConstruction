@@ -104,20 +104,16 @@ public class Shop
 	
 	public void addInk(Ink ink)
 	{
-		Ink[] t = new Ink[inks.length + 1];
-		for(int i = 0 ; i < inks.length ; ++i) t[i] = inks[i];
-		t[inks.length] = ink;
-		inks = t;
+		inks = Utils.copyArr(new Ink[inks.length + 1], inks);
+		inks[inks.length - 1] = ink;
 		
 		value += ink.getPrice();
 	}
 	
 	public void addToner(Toner toner)
 	{
-		Toner[] t = new Toner[toners.length + 1];
-		for(int i = 0 ; i < toners.length ; ++i) t[i] = toners[i];
-		t[toners.length] = toner;
-		toners = t;
+		toners = Utils.copyArr(new Toner[toners.length + 1], toners);
+		toners[toners.length - 1] = toner;
 		
 		value += toner.getPrice();
 	}
