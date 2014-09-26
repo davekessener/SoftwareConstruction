@@ -76,7 +76,6 @@ public class Test
 	{
 		print("Music - Test Log");
 		
-// Testing class Song
 		print("Test: class Song");
 		incInd();
 		Song s1 = new Song("ATitle", "AComposer", "AnInterpreter", IMusic.typeOfMusic.CLASSIC,
@@ -89,9 +88,7 @@ public class Test
 		print(s2.toString());
 		print("###");
 		decInd();
-// [END]
 		
-// Testing class SongSet
 		print("Test: class SongSet");
 		incInd();
 		SongSet ss = new SongSet(new Song[] {
@@ -104,31 +101,24 @@ public class Test
 		});
 		print("Constructor success.");
 		decInd();
-// [END]
 		
-// Testing class Library
 		print("Test: class Library");
 		incInd();
 		Library lib = new Library("TestLib", new Song[] {s1, s2}, new SongSet[] {ss});
 		print("Constructor success.");
 		decInd();
-// [END]
 		
-// Write Library to file for later use (in CD)
 		writeToFile(lib, LTMP_FILE);
 		
-// Testing class CD
 		print("Test: class CD");
 		incInd();
 		
-	// Constructing CD
-		BufferedReader br = new BufferedReader(new FileReader(LTMP_FILE));
+			BufferedReader br = new BufferedReader(new FileReader(LTMP_FILE));
 		CDDebug cd = new CDDebug("SomeCD", 16, br);
 		br.close();
 		print("Constructor success!");
 	
-	// Trying to add first song
-		print("Adding song1 (no exceptions expected) [...]");
+			print("Adding song1 (no exceptions expected) [...]");
 		try
 		{
 			cd.addSong(s1.getTitle());
@@ -140,15 +130,13 @@ public class Test
 		}
 		print("[SUCCESS!]");
 	
-	// Trying to add song of incompatible type
-		print("Adding song2 (incompatible type. retry after failure) [...]");
+			print("Adding song2 (incompatible type. retry after failure) [...]");
 		try
 		{
 			cd.addSong(s2.getTitle());
 		}
 		catch(IncompatibleTypeException e)
 		{
-//			e.printStackTrace();
 			print(e.toString());
 		}
 		catch(Exception e)
@@ -169,15 +157,13 @@ public class Test
 		}
 		print("[SUCCESS!]");
 		
-	// Trying to add songset that exceeds the maximum length
-		print("Adding songset1 (length exceeded. no retry) [...]");
+			print("Adding songset1 (length exceeded. no retry) [...]");
 		try
 		{
 			cd.addSongSet(ss.getTitle());
 		}
 		catch(MaxPermissableDurationExceededException e)
 		{
-//			e.printStackTrace();
 			print(e.toString());
 		}
 		catch(Exception e)
@@ -187,8 +173,7 @@ public class Test
 		}
 		print("[SUCCESS!]");
 		
-	// Add songset anyway and test read/write equality
-		print("For testing purposes, cd is resized and songset1 is added anyway.");
+			print("For testing purposes, cd is resized and songset1 is added anyway.");
 		cd.setMaxLength(58);
 		try
 		{
@@ -205,7 +190,6 @@ public class Test
 		print("### CD output:");
 		print(cd.burnToDisc());
 		print("###");
-// [END]
 		
 		return true;
 	}

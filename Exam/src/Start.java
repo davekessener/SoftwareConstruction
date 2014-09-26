@@ -1,9 +1,6 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-
-
-@SuppressWarnings("all")
 public class Start
 {
 	public static void main(String args[])

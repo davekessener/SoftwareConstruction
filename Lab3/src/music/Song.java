@@ -6,8 +6,8 @@ import java.io.IOException;
 
 public class Song implements IMusic,Cloneable
 {
-	protected String[] id; // title, composer, interpreter
-	protected int minutes; // length in minutes
+	protected String[] id;
+	protected int minutes;
 	protected byte[] content;
 	protected typeOfMusic type;
 	
@@ -22,18 +22,11 @@ public class Song implements IMusic,Cloneable
 		this.minutes = minutes >= 0 ? minutes : 0;
 		this.type = type;
 		
-		// deep copy of content
 		this.content = new byte[content.length];
 		for(int i = 0 ; i < content.length ; ++i)
 		{
 			this.content[i] = content[i];
 		}
-	}
-	
-	// copy-constructor
-	public Song(Song s)
-	{
-		this(s.id[TITLE_], s.id[COMPOSER_], s.id[INTERPRET_], s.type, s.minutes, s.content);
 	}
 	
 	@Override

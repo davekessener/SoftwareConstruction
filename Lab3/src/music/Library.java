@@ -22,7 +22,7 @@ public class Library
 		
 		for(int i = 0 ; i < songs.length ; ++i)
 		{
-			this.songs[i] = new Song(songs[i]);
+			this.songs[i] = (Song) songs[i].clone();
 		}
 		
 		for(int i = 0 ; i < songSets.length ; ++i)
